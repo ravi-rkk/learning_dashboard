@@ -1,0 +1,410 @@
+@import "tailwindcss";
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Space Grotesk', 'Outfit', system-ui, sans-serif;
+  background: #07080d;
+  color: #e8edf8;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #0e1018; }
+::-webkit-scrollbar-thumb { background: #1f2538; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #2a3048; }
+
+/* Transitions */
+.fade-enter {
+  opacity: 0;
+  transform: translateY(8px);
+}
+.fade-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+/* Input glow */
+input:focus {
+  outline: none;
+}
+
+/* Pill hover */
+.domain-pill:hover {
+  border-color: #00d4ff !important;
+  color: #00d4ff !important;
+}
+
+/* Nav item hover */
+.nav-item:hover {
+  background: #141720;
+  color: #e8edf8;
+}
+
+/* Domain card hover */
+.domain-card:hover {
+  transform: translateY(-3px);
+  border-color: #2a3048 !important;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.4);
+}
+
+/* Stat card hover */
+.stat-card:hover {
+  border-color: #2a3048 !important;
+}
+
+/* Login button hover */
+.login-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0,212,255,0.35);
+}
+
+/* Accordion chevron */
+.chevron-open {
+  transform: rotate(180deg);
+}
+
+/* Skill bar animation */
+.skill-fill {
+  transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Transition */
+.transition-all-fast {
+  transition: all 0.2s ease;
+}
+
+/* Input error flash */
+@keyframes errorFlash {
+  0%, 100% { border-color: #1f2538; }
+  50% { border-color: #ff4d9e; box-shadow: 0 0 0 3px rgba(255,77,158,0.15); }
+}
+.input-error {
+  animation: errorFlash 0.4s ease 2;
+}
+
+/* ─── App shell (mobile) ─── */
+:root {
+  --sidebar-w: 240px;
+}
+
+.app-shell {
+  display: flex;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+.app-main {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 36px 40px;
+  min-width: 0;
+}
+
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 45;
+  backdrop-filter: blur(2px);
+}
+
+.sidebar-overlay.is-open {
+  display: block;
+}
+
+.app-sidebar {
+  width: var(--sidebar-w);
+  flex-shrink: 0;
+  z-index: 50;
+}
+
+.mobile-menu-btn,
+.sidebar-close-btn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  border: 1px solid #1f2538;
+  background: #141720;
+  color: #e8edf8;
+  cursor: pointer;
+  flex-shrink: 0;
+  font-size: 18px;
+}
+
+.topbar-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.topbar-search {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 220px;
+  flex: 0 1 280px;
+}
+
+.notes-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.notes-section-divider {
+  grid-column: span 2;
+}
+
+.note-reader {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: var(--sidebar-w);
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.note-reader-header {
+  padding: 20px 40px 12px;
+}
+
+.note-reader-body {
+  padding: 32px 40px 64px;
+}
+
+.note-reader-footer {
+  padding: 16px 40px 24px;
+}
+
+.note-reader-title {
+  font-size: 36px;
+}
+
+.table-scroll {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table-scroll table {
+  min-width: 560px;
+}
+
+.login-shell {
+  display: flex;
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.login-panel-left {
+  flex: 1;
+}
+
+.login-panel-right {
+  width: 460px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 1023px) {
+  .app-sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    box-shadow: none;
+  }
+
+  .app-sidebar.is-open {
+    transform: translateX(0);
+    box-shadow: 8px 0 40px rgba(0, 0, 0, 0.5);
+  }
+
+  .mobile-menu-btn,
+  .sidebar-close-btn {
+    display: flex;
+  }
+
+  .app-main {
+    padding: 16px;
+    padding-top: max(16px, env(safe-area-inset-top));
+    padding-bottom: max(16px, env(safe-area-inset-bottom));
+  }
+
+  .topbar-row {
+    flex-direction: column;
+    align-items: stretch;
+    margin-bottom: 20px;
+    gap: 12px;
+  }
+
+  .topbar-search {
+    min-width: 0;
+    flex: 1 1 auto;
+    width: 100%;
+  }
+
+  .topbar-title {
+    font-size: 22px !important;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  .notes-cards-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .notes-section-divider {
+    grid-column: span 1;
+  }
+
+  .notes-topbar-actions {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .notes-view-toggle {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .notes-view-toggle button {
+    flex: 1;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+    font-size: 10px !important;
+  }
+
+  .note-reader {
+    left: 0;
+  }
+
+  .note-reader-header {
+    padding: 12px 16px;
+  }
+
+  .note-reader-body {
+    padding: 20px 16px 48px;
+  }
+
+  .note-reader-footer {
+    padding: 12px 16px 20px;
+  }
+
+  .note-reader-footer-nav {
+    flex-direction: column;
+    gap: 8px;
+    align-items: stretch !important;
+  }
+
+  .note-reader-footer-nav button {
+    width: 100%;
+    text-align: center;
+  }
+
+  .note-reader-title {
+    font-size: 26px !important;
+  }
+
+  .note-reader-toolbar {
+    flex-direction: column;
+    align-items: stretch !important;
+  }
+
+  .note-reader-nav-pills {
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .login-shell {
+    flex-direction: column;
+  }
+
+  .login-panel-right {
+    width: 100%;
+    min-height: auto;
+    padding: 32px 20px !important;
+  }
+
+  .login-panel-left {
+    min-height: auto;
+    padding: 24px 20px !important;
+  }
+
+  .login-hide-mobile {
+    display: none !important;
+  }
+}
+
+@media (max-width: 639px) {
+  .stats-grid {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  .stat-value {
+    font-size: 22px !important;
+  }
+
+  .iq-tabs {
+    flex-wrap: wrap;
+  }
+
+  .iq-tabs button {
+    flex: 1 1 calc(50% - 4px);
+    min-width: 0;
+    font-size: 11px !important;
+    padding: 6px 10px !important;
+  }
+
+  .index-row-title {
+    max-width: 100% !important;
+    white-space: normal !important;
+  }
+
+  .index-row-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 4px;
+  }
+
+  .notes-stats-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .note-reader-toolbar button {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .note-reader-nav-pills button {
+    flex: 1;
+    min-width: 0;
+    font-size: 10px !important;
+    padding: 6px 8px !important;
+  }
+}
