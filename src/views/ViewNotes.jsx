@@ -24,7 +24,7 @@ function buildIndexOrder(notes) {
   return ordered;
 }
 
-export default function ViewNotes({ view, notes, setNotes, pendingDrawerNote, clearPendingDrawer }) {
+export default function ViewNotes({ view, notes, setNotes, canEdit = false, pendingDrawerNote, clearPendingDrawer }) {
   const [editMode,       setEditMode]       = useState(false);
   const [readingNote,    setReadingNote]    = useState(null);
   const [readerEditMode, setReaderEditMode] = useState(false);
@@ -54,6 +54,13 @@ export default function ViewNotes({ view, notes, setNotes, pendingDrawerNote, cl
   }, [view]);
 
   useEffect(() => {
+    if (!canEdit) {
+      setEditMode(false);
+      setReaderEditMode(false);
+    }
+  }, [canEdit]);
+
+  useEffect(() => {
     if (pendingDrawerNote) {
       if (pendingDrawerNote.stack) setSelectedStack(pendingDrawerNote.stack);
       setReadingNote(pendingDrawerNote);
@@ -75,7 +82,7 @@ export default function ViewNotes({ view, notes, setNotes, pendingDrawerNote, cl
 
   function openNote(note, startInEdit = false) {
     setReadingNote(note);
-    setReaderEditMode(startInEdit);
+    setReaderEditMode(canEdit && startInEdit);
   }
 
   function closeReader() {
@@ -84,6 +91,7 @@ export default function ViewNotes({ view, notes, setNotes, pendingDrawerNote, cl
   }
 
   function saveNoteFields(noteId, fields) {
+    if (!canEdit) return;
     setNotes(prev => ({
       ...prev,
       [slug]: prev[slug].map(n =>
@@ -96,6 +104,7 @@ export default function ViewNotes({ view, notes, setNotes, pendingDrawerNote, cl
   }
 
   function patchNote(noteId, field, val) {
+    if (!canEdit) return;
     setNotes(prev => ({
       ...prev,
       [slug]: prev[slug].map(n =>
@@ -107,13 +116,16 @@ export default function ViewNotes({ view, notes, setNotes, pendingDrawerNote, cl
   }
 
   function deleteNote(noteId) {
+    if (!canEdit) return;
     setNotes(prev => ({
       ...prev,
       [slug]: prev[slug].filter(n => n.id !== noteId),
     }));
+    if (readingNote?.id === noteId) closeReader();
   }
 
   function addNote() {
+    if (!canEdit) return;
     const blank = {
       id:        Date.now().toString(),
       stack:     isFullStack ? (selectedStack || 'react') : undefined,
@@ -130,6 +142,7 @@ export default function ViewNotes({ view, notes, setNotes, pendingDrawerNote, cl
   }
 
   function toggleEdit() {
+    if (!canEdit) return;
     setEditMode(v => !v);
   }
 
@@ -152,6 +165,8 @@ export default function ViewNotes({ view, notes, setNotes, pendingDrawerNote, cl
       onPrev={() => goToAdjacent(-1)}
       onNext={() => goToAdjacent(1)}
       onSaveNote={saveNoteFields}
+      onDeleteNote={canEdit ? () => deleteNote(readingNote.id) : undefined}
+      canEdit={canEdit}
       initialEditMode={readerEditMode}
     />
   ) : null;
@@ -178,11 +193,12 @@ export default function ViewNotes({ view, notes, setNotes, pendingDrawerNote, cl
         stackMeta={stackMeta}
         onBackToStacks={isFullStack && selectedStack ? () => setSelectedStack(null) : undefined}
         notes={domNotes}
+        canEdit={canEdit}
         editMode={editMode}
         onToggleEdit={toggleEdit}
         onAddNote={addNote}
         onViewNote={note => openNote(note, false)}
-        onEditNote={note => openNote(note, true)}
+        onEditNote={canEdit ? note => openNote(note, true) : undefined}
         onPatchNote={patchNote}
         onDeleteNote={deleteNote}
       />

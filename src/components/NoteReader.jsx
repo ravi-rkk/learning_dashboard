@@ -8,6 +8,7 @@ import {
 } from './NoteReferenceImages';
 import NoteFormatToolbar from './NoteFormatToolbar';
 import NoteFormattedContent from './NoteFormattedContent';
+import NoteMetaEditor from './NoteMetaEditor';
 
 const HEADING = "'Clash Display', 'Outfit', sans-serif";
 
@@ -25,20 +26,38 @@ export default function NoteReader({
   onPrev,
   onNext,
   onSaveNote,
+  onDeleteNote,
+  canEdit = false,
   initialEditMode = false,
 }) {
-  const [editing, setEditing] = useState(initialEditMode);
+  const [editing, setEditing] = useState(canEdit && initialEditMode);
+  const [draftTopic, setDraftTopic] = useState(note.topic || '');
+  const [draftPreview, setDraftPreview] = useState(note.preview || '');
+  const [draftTags, setDraftTags] = useState((note.tags || []).join(', '));
+  const [draftStatus, setDraftStatus] = useState(note.status || 'Pending');
   const [draftContent, setDraftContent] = useState(note.content);
   const [draftImages, setDraftImages] = useState(() => normalizeImages(note.images));
   const [lightboxUrl, setLightboxUrl] = useState(null);
   const [showPreview, setShowPreview] = useState(true);
   const textareaRef = useRef(null);
 
-  useEffect(() => {
-    setEditing(initialEditMode);
-    setDraftContent(note.content);
+  function resetDrafts() {
+    setDraftTopic(note.topic || '');
+    setDraftPreview(note.preview || '');
+    setDraftTags((note.tags || []).join(', '));
+    setDraftStatus(note.status || 'Pending');
+    setDraftContent(note.content || '');
     setDraftImages(normalizeImages(note.images));
-  }, [note.id, initialEditMode]); // eslint-disable-line
+  }
+
+  useEffect(() => {
+    setEditing(canEdit && initialEditMode);
+    resetDrafts();
+  }, [note.id, initialEditMode, canEdit]); // eslint-disable-line
+
+  useEffect(() => {
+    if (!canEdit) setEditing(false);
+  }, [canEdit]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -66,9 +85,46 @@ export default function NoteReader({
   const s = STATUS_STYLE[note.status] || STATUS_STYLE.Pending;
 
   function handleSave() {
+    if (!canEdit) return;
     const images = draftImages.filter(img => img.url);
-    onSaveNote(note.id, { content: draftContent, images: images.length ? images : undefined });
+    const tags = draftTags.split(',').map(t => t.trim()).filter(Boolean);
+    onSaveNote(note.id, {
+      topic: draftTopic.trim() || 'Untitled',
+      preview: draftPreview.trim(),
+      tags: tags.length ? tags : ['General'],
+      status: draftStatus,
+      content: draftContent,
+      images: images.length ? images : undefined,
+    });
     setEditing(false);
+  }
+
+  function hasUnsavedChanges() {
+    const tagsNorm = draftTags.split(',').map(t => t.trim()).filter(Boolean).join(', ');
+    const origTags = (note.tags || []).join(', ');
+    return (
+      draftTopic !== (note.topic || '') ||
+      draftPreview !== (note.preview || '') ||
+      tagsNorm !== origTags ||
+      draftStatus !== (note.status || 'Pending') ||
+      draftContent !== (note.content || '') ||
+      JSON.stringify(draftImages) !== JSON.stringify(normalizeImages(note.images))
+    );
+  }
+
+  function handleDiscardChanges() {
+    if (hasUnsavedChanges() && !window.confirm('Discard all unsaved changes? Your edits will be lost.')) {
+      return;
+    }
+    resetDrafts();
+    setEditing(false);
+  }
+
+  function handleDelete() {
+    if (!canEdit || !onDeleteNote) return;
+    const title = note.topic || 'Untitled';
+    if (!window.confirm(`Delete "${title}"? This cannot be undone.`)) return;
+    onDeleteNote();
   }
 
   const hasImages = normalizeImages(note.images).length > 0;
@@ -133,14 +189,30 @@ export default function NoteReader({
             </div>
           )}
 
-          <div className="flex items-center gap-2">
-            {editing ? (
-              <button type="button" onClick={handleSave} style={actionBtn(T.green, 'rgba(0,255,179,0.07)', 'rgba(0,255,179,0.4)')}>
-                ✅ Save Notes
-              </button>
-            ) : (
-              <button type="button" onClick={() => setEditing(true)} style={actionBtn(T.cyan, 'rgba(0,212,255,0.07)', 'rgba(0,212,255,0.35)')}>
-                ✏️ Edit Notes
+          <div className="flex items-center gap-2 flex-wrap">
+            {canEdit && (
+              editing ? (
+                <>
+                  <button type="button" onClick={handleSave} style={actionBtn(T.green, 'rgba(0,255,179,0.07)', 'rgba(0,255,179,0.4)')}>
+                    ✅ Save Notes
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleDiscardChanges}
+                    style={actionBtn(T.pink, 'rgba(255,77,158,0.08)', 'rgba(255,77,158,0.35)')}
+                  >
+                    ↩ Discard changes
+                  </button>
+                </>
+              ) : (
+                <button type="button" onClick={() => setEditing(true)} style={actionBtn(T.cyan, 'rgba(0,212,255,0.07)', 'rgba(0,212,255,0.35)')}>
+                  ✏️ Edit Notes
+                </button>
+              )
+            )}
+            {canEdit && onDeleteNote && !editing && (
+              <button type="button" onClick={handleDelete} style={actionBtn(T.pink, 'rgba(255,77,158,0.08)', 'rgba(255,77,158,0.35)')}>
+                🗑 Delete
               </button>
             )}
           </div>
@@ -158,42 +230,57 @@ export default function NoteReader({
           {domain.icon} {domain.label.toUpperCase()} · NOTE {indexMeta?.num || '—'}
         </div>
 
-        <h1 className="note-reader-title" style={{
-          fontFamily: HEADING, fontWeight: 700,
-          color: T.text, margin: '0 0 16px', lineHeight: 1.2,
-        }}>
-          {note.topic || 'Untitled'}
-        </h1>
-
-        {note.preview && !editing && (
-          <p style={{
-            fontSize: 16, color: T.muted, lineHeight: 1.65,
-            margin: '0 0 24px', maxWidth: 640,
-          }}>
-            {note.preview}
-          </p>
-        )}
-
-        <div className="flex flex-wrap items-center gap-3 mb-8">
-          {note.tags.map(tag => (
-            <span key={tag} style={{
-              fontFamily: FONTS.mono, fontSize: 11, padding: '4px 12px',
-              background: T.surface2, border: `1px solid ${T.border}`,
-              borderRadius: 999, color: T.muted,
+        {editing && canEdit ? (
+          <NoteMetaEditor
+            topic={draftTopic}
+            preview={draftPreview}
+            tags={draftTags}
+            status={draftStatus}
+            onTopicChange={setDraftTopic}
+            onPreviewChange={setDraftPreview}
+            onTagsChange={setDraftTags}
+            onStatusChange={setDraftStatus}
+          />
+        ) : (
+          <>
+            <h1 className="note-reader-title" style={{
+              fontFamily: HEADING, fontWeight: 700,
+              color: T.text, margin: '0 0 16px', lineHeight: 1.2,
             }}>
-              {tag}
-            </span>
-          ))}
-          <span style={{
-            fontFamily: FONTS.mono, fontSize: 11, padding: '4px 12px',
-            borderRadius: 999, background: s.bg, color: s.color,
-          }}>
-            {note.status}
-          </span>
-          <span style={{ fontFamily: FONTS.mono, fontSize: 12, color: T.dim }}>
-            Updated {note.updatedAt}
-          </span>
-        </div>
+              {note.topic || 'Untitled'}
+            </h1>
+
+            {note.preview && (
+              <p style={{
+                fontSize: 16, color: T.muted, lineHeight: 1.65,
+                margin: '0 0 24px', maxWidth: 640,
+              }}>
+                {note.preview}
+              </p>
+            )}
+
+            <div className="flex flex-wrap items-center gap-3 mb-8">
+              {(note.tags || []).map(tag => (
+                <span key={tag} style={{
+                  fontFamily: FONTS.mono, fontSize: 11, padding: '4px 12px',
+                  background: T.surface2, border: `1px solid ${T.border}`,
+                  borderRadius: 999, color: T.muted,
+                }}>
+                  {tag}
+                </span>
+              ))}
+              <span style={{
+                fontFamily: FONTS.mono, fontSize: 11, padding: '4px 12px',
+                borderRadius: 999, background: s.bg, color: s.color,
+              }}>
+                {note.status}
+              </span>
+              <span style={{ fontFamily: FONTS.mono, fontSize: 12, color: T.dim }}>
+                Updated {note.updatedAt}
+              </span>
+            </div>
+          </>
+        )}
 
         {editing ? (
           <NoteImageEditor images={draftImages} onChange={setDraftImages} />
@@ -214,12 +301,23 @@ export default function NoteReader({
               textareaRef={textareaRef}
               onChange={val => { setDraftContent(val); autoResize(); }}
             />
-            <div className="flex items-center justify-end gap-2" style={{
+            <div className="flex items-center justify-between gap-2 flex-wrap" style={{
               background: T.surface2,
               borderLeft: `1px solid ${T.border}`,
               borderRight: `1px solid ${T.border}`,
               padding: '6px 12px',
             }}>
+              <button
+                type="button"
+                onClick={handleDiscardChanges}
+                style={{
+                  fontFamily: FONTS.mono, fontSize: 10, padding: '4px 12px',
+                  borderRadius: 6, border: `1px solid rgba(255,77,158,0.35)`,
+                  background: 'rgba(255,77,158,0.08)', color: T.pink, cursor: 'pointer',
+                }}
+              >
+                ↩ Discard changes
+              </button>
               <button
                 type="button"
                 onClick={() => setShowPreview(v => !v)}
@@ -237,7 +335,7 @@ export default function NoteReader({
               ref={textareaRef}
               value={draftContent}
               onChange={e => { setDraftContent(e.target.value); autoResize(); }}
-              placeholder={'# Big heading (cyan)\n## Medium heading (green)\n**bold** and [cyan]colored text[/cyan]\n\n- bullet point\n> quote block'}
+              placeholder={'# Section heading (cyan)\n## Subheading (green)\n### Smaller heading\n\n| Col 1 | Col 2 |\n| --- | --- |\n| data | data |\n\n- bullet\n1. numbered\n> quote'}
               style={{
                 width: '100%', background: T.surface,
                 border: `1px solid ${T.border2}`,

@@ -1,4 +1,5 @@
 import { T, FONTS } from '../tokens';
+import { isAdmin } from '../utils/notesStorage';
 
 const NAV_SECTIONS = [
   {
@@ -134,7 +135,9 @@ export default function Sidebar({ activeView, onNav, user, onLogout, mobileOpen,
           }}>
             {user}
           </div>
-          <div style={{ fontFamily: FONTS.mono, fontSize: 11, color: T.muted }}>Developer</div>
+          <div style={{ fontFamily: FONTS.mono, fontSize: 11, color: T.muted }}>
+            {isAdmin(user) ? 'Admin' : 'View only'}
+          </div>
         </div>
         <button id="logout-btn" type="button" onClick={onLogout}
           style={{

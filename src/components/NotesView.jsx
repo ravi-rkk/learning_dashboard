@@ -82,7 +82,7 @@ function SectionDivider({ label }) {
   );
 }
 
-function NoteCard({ note, index, onView, onEdit }) {
+function NoteCard({ note, index, onView, onEdit, canEdit, editMode, onDeleteNote }) {
   const s = STATUS_STYLE[note.status] || STATUS_STYLE.Pending;
   const num = String(index + 1).padStart(2, '0');
   const thumbs = normalizeImages(note.images);
@@ -197,19 +197,40 @@ function NoteCard({ note, index, onView, onEdit }) {
           >
             👁
           </button>
-          <button
-            onClick={e => { e.stopPropagation(); onEdit(note); }}
-            title="Edit"
-            style={{
-              background: 'none', border: 'none', cursor: 'pointer',
-              color: T.muted, padding: '2px 5px', borderRadius: 5, fontSize: 14,
-              transition: 'color 0.15s, background 0.15s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.color = T.cyan; e.currentTarget.style.background = 'rgba(0,212,255,0.08)'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = T.muted; e.currentTarget.style.background = 'none'; }}
-          >
-            ✏️
-          </button>
+          {canEdit && onEdit && (
+            <button
+              onClick={e => { e.stopPropagation(); onEdit(note); }}
+              title="Edit"
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: T.muted, padding: '2px 5px', borderRadius: 5, fontSize: 14,
+                transition: 'color 0.15s, background 0.15s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.color = T.cyan; e.currentTarget.style.background = 'rgba(0,212,255,0.08)'; }}
+              onMouseLeave={e => { e.currentTarget.style.color = T.muted; e.currentTarget.style.background = 'none'; }}
+            >
+              ✏️
+            </button>
+          )}
+          {canEdit && editMode && onDeleteNote && (
+            <button
+              onClick={e => {
+                e.stopPropagation();
+                const title = note.topic || 'Untitled';
+                if (window.confirm(`Delete "${title}"?`)) onDeleteNote(note.id);
+              }}
+              title="Delete"
+              style={{
+                background: 'none', border: 'none', cursor: 'pointer',
+                color: T.muted, padding: '2px 5px', borderRadius: 5, fontSize: 14,
+                transition: 'color 0.15s, background 0.15s',
+              }}
+              onMouseEnter={e => { e.currentTarget.style.color = T.pink; e.currentTarget.style.background = 'rgba(255,77,158,0.08)'; }}
+              onMouseLeave={e => { e.currentTarget.style.color = T.muted; e.currentTarget.style.background = 'none'; }}
+            >
+              🗑
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -563,6 +584,7 @@ export default function NotesView({
   stackMeta,
   onBackToStacks,
   notes,
+  canEdit = false,
   editMode,
   onToggleEdit,
   onAddNote,
@@ -612,6 +634,9 @@ export default function NotesView({
               index={i}
               onView={onViewNote}
               onEdit={onEditNote}
+              canEdit={canEdit}
+              editMode={editMode}
+              onDeleteNote={onDeleteNote}
             />
           ))}
         </div>
@@ -632,6 +657,9 @@ export default function NotesView({
             index={globalIndex}
             onView={onViewNote}
             onEdit={onEditNote}
+            canEdit={canEdit}
+            editMode={editMode}
+            onDeleteNote={onDeleteNote}
           />
         );
         globalIndex += 1;
@@ -708,35 +736,47 @@ export default function NotesView({
             ))}
           </div>
 
-          <button
-            onClick={onToggleEdit}
-            style={{
-              fontFamily: FONTS.mono, fontSize: 12,
-              padding: '6px 14px', borderRadius: 7,
-              border: `1px solid ${T.border2}`,
-              background: T.surface2, color: T.muted, cursor: 'pointer',
-              transition: 'color 0.15s, border-color 0.15s',
-            }}
-            onMouseEnter={e => { e.currentTarget.style.color = T.text; e.currentTarget.style.borderColor = T.cyan; }}
-            onMouseLeave={e => { e.currentTarget.style.color = T.muted; e.currentTarget.style.borderColor = T.border2; }}
-          >
-            {editMode ? '✅ Save' : '✏️ Edit'}
-          </button>
+          {canEdit ? (
+            <>
+              <button
+                onClick={onToggleEdit}
+                style={{
+                  fontFamily: FONTS.mono, fontSize: 12,
+                  padding: '6px 14px', borderRadius: 7,
+                  border: `1px solid ${T.border2}`,
+                  background: T.surface2, color: T.muted, cursor: 'pointer',
+                  transition: 'color 0.15s, border-color 0.15s',
+                }}
+                onMouseEnter={e => { e.currentTarget.style.color = T.text; e.currentTarget.style.borderColor = T.cyan; }}
+                onMouseLeave={e => { e.currentTarget.style.color = T.muted; e.currentTarget.style.borderColor = T.border2; }}
+              >
+                {editMode ? '✅ Done editing' : '✏️ Edit table'}
+              </button>
 
-          <button
-            onClick={onAddNote}
-            style={{
-              fontFamily: FONTS.mono, fontSize: 12,
-              padding: '6px 14px', borderRadius: 7,
-              border: '1px solid rgba(0,212,255,0.3)',
-              background: 'rgba(0,212,255,0.1)', color: T.cyan, cursor: 'pointer',
-              transition: 'background 0.15s',
-            }}
-            onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,212,255,0.18)')}
-            onMouseLeave={e => (e.currentTarget.style.background = 'rgba(0,212,255,0.1)')}
-          >
-            + Add Note
-          </button>
+              <button
+                onClick={onAddNote}
+                style={{
+                  fontFamily: FONTS.mono, fontSize: 12,
+                  padding: '6px 14px', borderRadius: 7,
+                  border: '1px solid rgba(0,212,255,0.3)',
+                  background: 'rgba(0,212,255,0.1)', color: T.cyan, cursor: 'pointer',
+                  transition: 'background 0.15s',
+                }}
+                onMouseEnter={e => (e.currentTarget.style.background = 'rgba(0,212,255,0.18)')}
+                onMouseLeave={e => (e.currentTarget.style.background = 'rgba(0,212,255,0.1)')}
+              >
+                + Add Note
+              </button>
+            </>
+          ) : (
+            <span style={{
+              fontFamily: FONTS.mono, fontSize: 11, padding: '6px 12px',
+              borderRadius: 7, border: `1px solid ${T.border}`,
+              background: T.surface2, color: T.muted,
+            }}>
+              👁 View only
+            </span>
+          )}
         </div>
       </div>
 
@@ -796,7 +836,7 @@ export default function NotesView({
       {viewMode === 'table' && (
         <NotesTable
           notes={notes}
-          editMode={editMode}
+          editMode={canEdit && editMode}
           onOpenDrawer={onViewNote}
           onPatchNote={onPatchNote}
           onDeleteNote={onDeleteNote}

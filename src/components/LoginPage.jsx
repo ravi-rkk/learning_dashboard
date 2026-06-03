@@ -151,9 +151,10 @@ export default function LoginPage({ onLogin }) {
             borderRadius:10, padding:'16px 18px' }}>
             <p style={{ fontFamily:FONTS.mono, fontSize:11, color:T.yellow,
               letterSpacing:'0.08em', marginBottom:10 }}>DEMO CREDENTIALS</p>
-            {[['admin','admin123'],['dev','dev123']].map(([u,p]) => (
-              <div key={u} className="flex justify-between" style={{ marginBottom:6, fontSize:13 }}>
+            {[['admin','admin123','Edit notes'],['dev','dev123','View only']].map(([u,p,role]) => (
+              <div key={u} className="flex justify-between items-center gap-2" style={{ marginBottom:8, fontSize:13 }}>
                 <span style={{ fontFamily:FONTS.mono, color:T.muted }}>{u}</span>
+                <span style={{ fontFamily:FONTS.mono, fontSize:10, color:T.cyan }}>{role}</span>
                 <span style={{ fontFamily:FONTS.mono, color:T.dim }}>{p}</span>
               </div>
             ))}

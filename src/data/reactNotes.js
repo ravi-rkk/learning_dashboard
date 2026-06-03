@@ -10,8 +10,7 @@ export const REACT_NOTES = [
     tags: ['React', 'Library', 'SPA'],
     status: 'Complete',
     preview: 'React is a powerful JavaScript library for building fast, scalable front-end applications.',
-    content: `what is react?
-React is a powerful JavaScript library for building fast, scalable front-end applications. Created by Facebook, it's known for its component-based structure, single-page applications (SPAs), and virtual DOM, enabling efficient UI updates and a seamless user experience.it is also used to build dynamic and interactive user interfaces.`,
+    content: `React is a powerful JavaScript library for building fast, scalable front-end applications. Created by Facebook, it's known for its component-based structure, single-page applications (SPAs), and virtual DOM, enabling efficient UI updates and a seamless user experience.it is also used to build dynamic and interactive user interfaces.`,
     updatedAt: '2 days ago',
   },
   {
@@ -21,18 +20,19 @@ React is a powerful JavaScript library for building fast, scalable front-end app
     tags: ['React', 'Virtual DOM', 'Popular'],
     status: 'Complete',
     preview: 'Before React, front-end development struggled with manual DOM manipulation and complex state.',
-    content: `why react is popular/why we use react in todays?
-Before React, front-end development struggled with:
-Manual DOM Manipulation: Traditional JavaScript directly modified the DOM, slowing down the performance.
-Complex State Management: Maintaining UI state became messy and hard to debug.
-Tight Coupling in Frameworks: Frameworks like Angular introduced complex two-way data binding that made code harder to manage.
+    content: `Before React, front-end development struggled with:
+
+- **Manual DOM Manipulation:** Traditional JavaScript directly modified the DOM, slowing down the performance.
+- **Complex State Management:** Maintaining UI state became messy and hard to debug.
+- **Tight Coupling in Frameworks:** Frameworks like Angular introduced complex two-way data binding that made code harder to manage.
 
 React solved these issues with a modern and modular approach.
-Core Features
 
-Virtual DOM: React updates only the changed parts of the DOM, resulting in faster rendering.
-One-Way Data Binding: Ensures predictable and easy to debug data flow.
-Component-Based Architecture: Breaks UI into reusable pieces, improving the code reusability and scalability.`,
+## Core Features
+
+- **Virtual DOM:** React updates only the changed parts of the DOM, resulting in faster rendering.
+- **One-Way Data Binding:** Ensures predictable and easy to debug data flow.
+- **Component-Based Architecture:** Breaks UI into reusable pieces, improving the code reusability and scalability.`,
     updatedAt: '3 days ago',
   },
   {
@@ -42,8 +42,7 @@ Component-Based Architecture: Breaks UI into reusable pieces, improving the code
     tags: ['Virtual DOM', 'Reconciliation'],
     status: 'Complete',
     preview: 'React operates by creating an in-memory virtual DOM rather than directly manipulating the browser’s DOM.',
-    content: `How react working?
-React operates by creating an in-memory virtual DOM rather than directly manipulating the browser’s DOM. It performs necessary manipulations within this virtual representation before applying changes to the actual browser DOM.`,
+    content: `React operates by creating an in-memory virtual DOM rather than directly manipulating the browser’s DOM. It performs necessary manipulations within this virtual representation before applying changes to the actual browser DOM.`,
     updatedAt: '4 days ago',
   },
   {
@@ -53,13 +52,17 @@ React operates by creating an in-memory virtual DOM rather than directly manipul
     tags: ['DOM', 'Virtual DOM', 'Reconciliation'],
     status: 'Complete',
     preview: 'Actual DOM and Virtual DOM: React compares previous and new Virtual DOM via reconciliation.',
-    content: `How DOM Working explain?
+    content: `## Actual DOM and Virtual DOM
 
-Actual DOM and Virtual DOM: Initially, there is an Actual DOM(Real DOM) containing a div with two child elements: h1 and h2. React maintains a previous Virtual DOM to track the UI state before any updates.
+Initially, there is an Actual DOM(Real DOM) containing a div with two child elements: h1 and h2. React maintains a previous Virtual DOM to track the UI state before any updates.
 
-Detecting Changes: When a change occurs (e.g., adding a new h3 element), React generates a New Virtual DOM. React compares the previous Virtual DOM with the New Virtual DOM using a process called reconciliation.
+## Detecting Changes
 
-Efficient DOM Update: React identifies the differences (this case, the new h3 element). Instead of updating the entire DOM, React updates only the changed part in the New Actual DOM, making the update process more efficient.`,
+When a change occurs (e.g., adding a new h3 element), React generates a New Virtual DOM. React compares the previous Virtual DOM with the New Virtual DOM using a process called reconciliation.
+
+## Efficient DOM Update
+
+React identifies the differences (this case, the new h3 element). Instead of updating the entire DOM, React updates only the changed part in the New Actual DOM, making the update process more efficient.`,
     updatedAt: '5 days ago',
   },
   {
@@ -69,22 +72,15 @@ Efficient DOM Update: React identifies the differences (this case, the new h3 el
     tags: ['JSX', 'Hooks', 'Router', 'State'],
     status: 'Complete',
     preview: 'Below are the few features of React:- Virtual DOM, Component-Based Architecture, JSX...',
-    content: `what are the feature of the react ?
-Below are the few features of React:-
+    content: `Below are the few features of React:-
 
-Virtual DOM: React uses a Virtual DOM to optimize UI rendering. Instead of updating the entire real DOM directly.
-
-Component-Based Architecture: React follows a component-based approach, where the UI is broken down into reusable components.
-
-JSX (JavaScript XML): React uses JSX, a syntax extension that allows developers to write HTML inside JavaScript.
-
-One-Way Data Binding: React uses one-way data binding, meaning data flows in a single direction from parent components to child components via props. This provides better control over data and helps maintain predictable behavior.
-
-State Management: React manages component state efficiently using the useState hook (for functional components) or this.state (for class components). State allows dynamic updates without reloading the page.
-
-React Hooks: Hooks allow functional components to use state and lifecycle features without needing class components.
-
-React Router: React provides React Router for managing navigation in single-page applications (SPAs). It enables dynamic routing without requiring full-page reloads.`,
+- **Virtual DOM:** React uses a Virtual DOM to optimize UI rendering. Instead of updating the entire real DOM directly.
+- **Component-Based Architecture:** React follows a component-based approach, where the UI is broken down into reusable components.
+- **JSX (JavaScript XML):** React uses JSX, a syntax extension that allows developers to write HTML inside JavaScript.
+- **One-Way Data Binding:** React uses one-way data binding, meaning data flows in a single direction from parent components to child components via props. This provides better control over data and helps maintain predictable behavior.
+- **State Management:** React manages component state efficiently using the useState hook (for functional components) or this.state (for class components). State allows dynamic updates without reloading the page.
+- **React Hooks:** Hooks allow functional components to use state and lifecycle features without needing class components.
+- **React Router:** React provides React Router for managing navigation in single-page applications (SPAs). It enables dynamic routing without requiring full-page reloads.`,
     updatedAt: '5 days ago',
   },
   {
@@ -94,12 +90,10 @@ React Router: React provides React Router for managing navigation in single-page
     tags: ['Web', 'React Native', 'Dashboard'],
     status: 'Complete',
     preview: 'Web Development, Mobile Apps, Enterprise Applications, Dashboards and Data Visualization.',
-    content: `what are the Application of React?
-Web Development: React is used to build dynamic and responsive web apps like social media, e-commerce, and blogs platforms.
-
-Mobile Apps: React Native helps build iOS and Android apps using a single codebase.
-Enterprise Applications: Used for large-scale applications that need highly interactive UIs.
-Dashboards and Data Visualization: Ideal for real-time dashboards and data visualization tools due to high performance.`,
+    content: `- **Web Development:** React is used to build dynamic and responsive web apps like social media, e-commerce, and blogs platforms.
+- **Mobile Apps:** React Native helps build iOS and Android apps using a single codebase.
+- **Enterprise Applications:** Used for large-scale applications that need highly interactive UIs.
+- **Dashboards and Data Visualization:** Ideal for real-time dashboards and data visualization tools due to high performance.`,
     updatedAt: '6 days ago',
   },
   {
@@ -109,16 +103,17 @@ Dashboards and Data Visualization: Ideal for real-time dashboards and data visua
     tags: ['ReactDOM', 'render', 'createPortal'],
     status: 'Complete',
     preview: 'ReactDOM is a core React package that provides DOM-specific methods.',
-    content: `What is the React JS ReactDOM?
-React JS ReactDOM:-ReactDOM is a core React package that provides DOM-specific methods to interact with and manipulate the Document Object Model (DOM), enabling efficient rendering and management of web page elements.
+    content: `React JS ReactDOM:-ReactDOM is a core React package that provides DOM-specific methods to interact with and manipulate the Document Object Model (DOM), enabling efficient rendering and management of web page elements.
 
-ReactDOM is used for-
-Rendering Components: Displays React components in the DOM.
-DOM Manipulation: Allows efficient DOM updates.
-Server-Side Rendering: Supports rendering on both client and server.
-React & DOM Bridge: Connects React with the browser’s DOM.
+## ReactDOM is used for
 
-Function we use in ReactJsDOM:-
+- **Rendering Components:** Displays React components in the DOM.
+- **DOM Manipulation:** Allows efficient DOM updates.
+- **Server-Side Rendering:** Supports rendering on both client and server.
+- **React & DOM Bridge:** Connects React with the browser’s DOM.
+
+## Function we use in ReactJsDOM
+
 | Function                   | Meaning                           | Status     |
 | -------------------------- | --------------------------------- | ---------- |
 | \`render()\`                 | Display component                 | Current    |
@@ -129,16 +124,17 @@ Function we use in ReactJsDOM:-
 | \`createPortal()\`           | Render component elsewhere in DOM | Current    |
 
 
-For better understanding
-(Real Life Analogy)
+## For better understanding
 
-Imagine:
-React = Chef who cooks food.
-ReactDOM = Waiter who serves food to table.
-Browser DOM = Customer table.
-Chef makes food, but waiter delivers it.
+### Real Life Analogy
 
-Same:
+**Imagine:**
+- React = Chef who cooks food.
+- ReactDOM = Waiter who serves food to table.
+- Browser DOM = Customer table.
+- Chef makes food, but waiter delivers it.
+
+**Same:**
 React creates UI, ReactDOM displays it in browser.`,
     updatedAt: '1 week ago',
   },

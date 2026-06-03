@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import './index.css';
 import { T, FONTS } from './tokens';
 import { VIEW_META, NOTES_V2, USERS } from './data';
+import { loadNotes, saveNotes, isAdmin } from './utils/notesStorage';
 
 const AUTH_STORAGE_KEY = 'devatlas_user';
 
@@ -324,7 +325,7 @@ function Topbar({ view, searchQuery, setSearchQuery, onMenuOpen }) {
 }
 
 /* ─── View Switcher ─── */
-function ViewContent({ view, onNav, user, notes, setNotes, pendingDrawerNote, clearPendingDrawer }) {
+function ViewContent({ view, onNav, user, notes, setNotes, canEditNotes, pendingDrawerNote, clearPendingDrawer }) {
   const style = {
     minHeight: 200,
     transition: 'opacity 0.2s ease, transform 0.2s ease',
@@ -341,6 +342,7 @@ function ViewContent({ view, onNav, user, notes, setNotes, pendingDrawerNote, cl
         view={view}
         notes={notes}
         setNotes={setNotes}
+        canEdit={canEditNotes}
         pendingDrawerNote={pendingDrawerNote}
         clearPendingDrawer={clearPendingDrawer}
       />
@@ -354,9 +356,18 @@ function ViewContent({ view, onNav, user, notes, setNotes, pendingDrawerNote, cl
 /* ─── Dashboard ─── */
 function Dashboard({ user, onLogout }) {
   const [view,        setView]        = useState('home');
-  const [notes,       setNotes]       = useState(NOTES_V2);
+  const [notes,       setNotes]       = useState(() => loadNotes(NOTES_V2));
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileNav,   setMobileNav]   = useState(false);
+  const canEditNotes = isAdmin(user);
+
+  const setNotesPersisted = useCallback((updater) => {
+    setNotes(prev => {
+      const next = typeof updater === 'function' ? updater(prev) : updater;
+      if (isAdmin(user)) saveNotes(next);
+      return next;
+    });
+  }, [user]);
 
   // Track the view that was active before search started so we can restore it
   const prevViewRef = useRef('home');
@@ -442,7 +453,8 @@ function Dashboard({ user, onLogout }) {
             onNav={setView}
             user={user}
             notes={notes}
-            setNotes={setNotes}
+            setNotes={setNotesPersisted}
+            canEditNotes={canEditNotes}
             pendingDrawerNote={pendingDrawerNote}
             clearPendingDrawer={() => setPendingDrawerNote(null)}
           />

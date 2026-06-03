@@ -1,4 +1,6 @@
 import { T, FONTS } from '../tokens';
+import { buildTableMarkdown, insertAtCursor, appendTableRow } from '../utils/noteMarkdown';
+import { normalizeNoteContent } from '../utils/noteContentNormalize';
 
 const COLORS = [
   { id: 'cyan',   label: 'Cyan',   color: T.cyan },
@@ -34,7 +36,11 @@ export function applyFormat(textarea, action) {
 
   const linePrefix = (prefix) => {
     const { start: ls, end: le, line } = getLineBounds(value, start);
-    const body = line.replace(/^#{1,3}\s+/, '').replace(/^>\s+/, '').replace(/^[-*]\s+/, '');
+    const body = line
+      .replace(/^#{1,4}\s+/, '')
+      .replace(/^>\s+/, '')
+      .replace(/^[-*]\s+/, '')
+      .replace(/^\d+\.\s+/, '');
     const newLine = prefix + body;
     newValue = value.slice(0, ls) + newLine + value.slice(le);
     newStart = ls;
@@ -63,9 +69,21 @@ export function applyFormat(textarea, action) {
     case 'h3':
       linePrefix('### ');
       break;
+    case 'h4':
+      linePrefix('#### ');
+      break;
     case 'ul':
       linePrefix('- ');
       break;
+    case 'ol':
+      linePrefix('1. ');
+      break;
+    case 'table3':
+      return insertAtCursor(textarea, buildTableMarkdown(3, 3).trim());
+    case 'table4':
+      return insertAtCursor(textarea, buildTableMarkdown(4, 3).trim());
+    case 'tableRow':
+      return appendTableRow(textarea);
     case 'quote':
       linePrefix('> ');
       break;
@@ -123,6 +141,13 @@ export default function NoteFormatToolbar({ textareaRef, onChange }) {
     });
   }
 
+  function runAutoFormat() {
+    const el = textareaRef.current;
+    if (!el) return;
+    onChange(normalizeNoteContent(el.value));
+    requestAnimationFrame(() => el.focus());
+  }
+
   return (
     <div style={{
       background: T.surface2,
@@ -142,12 +167,20 @@ export default function NoteFormatToolbar({ textareaRef, onChange }) {
         <ToolBtn title="Heading 1 (cyan)" accent={T.cyan} onClick={() => run('h1')}>H1</ToolBtn>
         <ToolBtn title="Heading 2 (green)" accent={T.green} onClick={() => run('h2')}>H2</ToolBtn>
         <ToolBtn title="Heading 3 (yellow)" accent={T.yellow} onClick={() => run('h3')}>H3</ToolBtn>
+        <ToolBtn title="Heading 4 (purple)" accent={T.purple} onClick={() => run('h4')}>H4</ToolBtn>
         <ToolBtn title="Bold" onClick={() => run('bold')}>𝐁 Bold</ToolBtn>
         <ToolBtn title="Italic" onClick={() => run('italic')}>𝐼 Italic</ToolBtn>
         <ToolBtn title="Inline code" onClick={() => run('code')}>{'`'} Code</ToolBtn>
         <ToolBtn title="Bullet list" onClick={() => run('ul')}>• List</ToolBtn>
+        <ToolBtn title="Numbered list" onClick={() => run('ol')}>1. List</ToolBtn>
         <ToolBtn title="Quote" onClick={() => run('quote')}>❝ Quote</ToolBtn>
+        <ToolBtn title="Insert 3-column table" accent={T.cyan} onClick={() => run('table3')}>⊞ Table</ToolBtn>
+        <ToolBtn title="Insert 4-column table" accent={T.cyan} onClick={() => run('table4')}>⊞ 4-col</ToolBtn>
+        <ToolBtn title="Add table row at cursor" accent={T.green} onClick={() => run('tableRow')}>+ Row</ToolBtn>
         <ToolBtn title="Link" onClick={() => run('link')}>🔗 Link</ToolBtn>
+        <ToolBtn title="Auto-format plain text into headings and lists" accent={T.yellow} onClick={runAutoFormat}>
+          ✨ Format
+        </ToolBtn>
         <ToolBtn title="Divider line" onClick={() => run('divider')}>— Line</ToolBtn>
       </div>
 

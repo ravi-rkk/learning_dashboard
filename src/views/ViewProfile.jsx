@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { T, FONTS } from '../tokens';
+import { isAdmin } from '../utils/notesStorage';
 
 const SKILL_ROWS = [
   { icon:'🌐', label:'Full Stack', pct:65, color:'#00d4ff' },
@@ -17,6 +18,7 @@ const SUMMARY_ROWS = [
 
 export default function ViewProfile({ user }) {
   const [animated, setAnimated] = useState(false);
+  const admin = isAdmin(user);
   useEffect(() => { const t = setTimeout(() => setAnimated(true), 100); return () => clearTimeout(t); }, []);
 
   return (
@@ -35,10 +37,12 @@ export default function ViewProfile({ user }) {
           <div style={{ fontFamily:FONTS.heading, fontWeight:700, fontSize:24, color:T.text, marginBottom:6 }}>
             {user ? user.charAt(0).toUpperCase() + user.slice(1) : 'Admin'}
           </div>
-          <div style={{ fontSize:14, color:T.muted, marginBottom:18 }}>admin@devatlas.io</div>
+          <div style={{ fontSize:14, color:T.muted, marginBottom:12 }}>{user}@devatlas.io</div>
           <span style={{ fontFamily:FONTS.mono, fontSize:12, padding:'5px 16px', borderRadius:999,
-            background:T.surface2, border:`1px solid ${T.border}`, color:T.muted }}>
-            Full Stack Developer
+            background: admin ? 'rgba(0,255,179,0.08)' : T.surface2,
+            border:`1px solid ${admin ? 'rgba(0,255,179,0.25)' : T.border}`,
+            color: admin ? T.green : T.muted, marginBottom:10, display:'inline-block' }}>
+            {admin ? '✏️ Admin — can edit notes' : '👁 Viewer — read-only notes'}
           </span>
         </div>
 

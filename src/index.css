@@ -408,3 +408,53 @@ input:focus {
     padding: 6px 8px !important;
   }
 }
+
+/* Markdown tables in notes */
+.note-table-wrap {
+  -webkit-overflow-scrolling: touch;
+  border-radius: 12px;
+  border: 1px solid var(--border, #1e2a3a);
+}
+
+.note-table th,
+.note-table td {
+  border: 1px solid #1e2a3a;
+  padding: 10px 14px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.note-table th {
+  background: rgba(0, 212, 255, 0.08);
+  color: #00d4ff;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.note-table tbody tr:nth-child(even) td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.note-table tbody tr:hover td {
+  background: rgba(0, 212, 255, 0.04);
+}
+
+.note-prose .note-list li::marker {
+  color: #00d4ff;
+}
+
+.note-prose p {
+  margin-bottom: 14px;
+  line-height: 1.85;
+}
+
+.note-prose p strong {
+  color: #ffcc00;
+}
+
+.note-prose .note-list li strong {
+  color: #ff4d9e;
+  font-weight: 700;
+}

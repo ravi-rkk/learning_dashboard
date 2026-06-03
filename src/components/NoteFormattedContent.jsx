@@ -1,4 +1,6 @@
 import { T, FONTS } from '../tokens';
+import { isTableRow, isTableSeparator, parseTableRow } from '../utils/noteMarkdown';
+import { normalizeNoteContent } from '../utils/noteContentNormalize';
 
 const HEADING = "'Clash Display', 'Outfit', sans-serif";
 
@@ -124,6 +126,35 @@ function Block({ type, children, line }) {
       </h4>
     );
   }
+  if (type === 'h4') {
+    return (
+      <h5 style={{
+        fontFamily: HEADING, fontSize: 16, fontWeight: 700, color: T.purple,
+        margin: '14px 0 6px', lineHeight: 1.4,
+      }}>
+        {children}
+      </h5>
+    );
+  }
+  if (type === 'ol') {
+    return (
+      <ol style={{ margin: '10px 0', paddingLeft: 22, color: T.text }}>
+        {line}
+      </ol>
+    );
+  }
+  if (type === 'table') {
+    return (
+      <div className="note-table-wrap" style={{ margin: '18px 0', overflowX: 'auto' }}>
+        <table className="note-table" style={{
+          width: '100%', borderCollapse: 'collapse',
+          fontSize: 14, lineHeight: 1.5,
+        }}>
+          {children}
+        </table>
+      </div>
+    );
+  }
   if (type === 'hr') {
     return <hr style={{ border: 'none', borderTop: `1px solid ${T.border2}`, margin: '24px 0' }} />;
   }
@@ -142,7 +173,10 @@ function Block({ type, children, line }) {
   }
   if (type === 'ul') {
     return (
-      <ul style={{ margin: '10px 0', paddingLeft: 22, color: T.text }}>
+      <ul className="note-list" style={{
+        margin: '14px 0 20px', paddingLeft: 26, color: T.text,
+        listStyleType: 'disc', listStylePosition: 'outside',
+      }}>
         {line}
       </ul>
     );
@@ -199,6 +233,11 @@ function parseBlocks(content) {
       continue;
     }
 
+    if (/^####\s+/.test(line)) {
+      blocks.push({ type: 'h4', text: line.replace(/^####\s+/, '') });
+      i += 1;
+      continue;
+    }
     if (/^###\s+/.test(line)) {
       blocks.push({ type: 'h3', text: line.replace(/^###\s+/, '') });
       i += 1;
@@ -211,6 +250,28 @@ function parseBlocks(content) {
     }
     if (/^#\s+/.test(line)) {
       blocks.push({ type: 'h1', text: line.replace(/^#\s+/, '') });
+      i += 1;
+      continue;
+    }
+
+    if (isTableRow(line)) {
+      const tableLines = [];
+      while (i < lines.length && isTableRow(lines[i])) {
+        tableLines.push(lines[i]);
+        i += 1;
+      }
+      const bodyRows = tableLines.filter(l => !isTableSeparator(l));
+      if (bodyRows.length) {
+        const headerCells = parseTableRow(bodyRows[0]);
+        const dataRows = bodyRows.slice(1).map(parseTableRow);
+        blocks.push({ type: 'table', headerCells, dataRows });
+      }
+      continue;
+    }
+
+    const boldOnly = line.trim().match(/^\*\*([^*]+)\*\*\s*:?\s*$/);
+    if (boldOnly) {
+      blocks.push({ type: 'h3', text: boldOnly[1] });
       i += 1;
       continue;
     }
@@ -229,7 +290,7 @@ function parseBlocks(content) {
       const items = [];
       while (i < lines.length && /^[-*]\s+/.test(lines[i])) {
         items.push(
-          <li key={i} style={{ marginBottom: 6 }}>
+          <li key={i} style={{ marginBottom: 10, lineHeight: 1.75, paddingLeft: 4 }}>
             {renderInline(lines[i].replace(/^[-*]\s+/, ''))}
           </li>
         );
@@ -239,15 +300,31 @@ function parseBlocks(content) {
       continue;
     }
 
+    if (/^\d+\.\s+/.test(line)) {
+      const items = [];
+      while (i < lines.length && /^\d+\.\s+/.test(lines[i])) {
+        items.push(
+          <li key={i} style={{ marginBottom: 6 }}>
+            {renderInline(lines[i].replace(/^\d+\.\s+/, ''))}
+          </li>
+        );
+        i += 1;
+      }
+      blocks.push({ type: 'ol', items });
+      continue;
+    }
+
     if (line.trim() === '') {
       i += 1;
       continue;
     }
 
     const para = [];
-    while (i < lines.length && lines[i].trim() !== '' && !/^#{1,3}\s/.test(lines[i])
-      && !/^[-*]\s+/.test(lines[i]) && !/^>\s?/.test(lines[i])
-      && !lines[i].trim().startsWith('```') && !/^---+$/.test(lines[i].trim())) {
+    while (i < lines.length && lines[i].trim() !== '' && !/^#{1,4}\s/.test(lines[i])
+      && !/^[-*]\s+/.test(lines[i]) && !/^\d+\.\s+/.test(lines[i]) && !/^>\s?/.test(lines[i])
+      && !isTableRow(lines[i])
+      && !lines[i].trim().startsWith('```') && !/^---+$/.test(lines[i].trim())
+      && !/^\*\*[^*]+\*\*\s*:?\s*$/.test(lines[i].trim())) {
       para.push(lines[i]);
       i += 1;
     }
@@ -267,16 +344,38 @@ export default function NoteFormattedContent({ content }) {
     );
   }
 
-  const blocks = parseBlocks(content);
+  const blocks = parseBlocks(normalizeNoteContent(content));
 
   return (
     <div className="note-prose" style={{ fontFamily: FONTS.body, fontSize: 16 }}>
       {blocks.map((block, idx) => {
-        if (block.type === 'ul') {
-          return <Block key={idx} type="ul" line={block.items} />;
+        if (block.type === 'ul' || block.type === 'ol') {
+          return <Block key={idx} type={block.type} line={block.items} />;
         }
         if (block.type === 'code') {
           return <Block key={idx} type="code">{block.text}</Block>;
+        }
+        if (block.type === 'table') {
+          return (
+            <Block key={idx} type="table">
+              <thead>
+                <tr>
+                  {block.headerCells.map((cell, ci) => (
+                    <th key={ci}>{renderInline(cell)}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {block.dataRows.map((row, ri) => (
+                  <tr key={ri}>
+                    {row.map((cell, ci) => (
+                      <td key={ci}>{renderInline(cell)}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </Block>
+          );
         }
         return (
           <Block key={idx} type={block.type}>
