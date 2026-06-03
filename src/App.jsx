@@ -1,8 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import './index.css';
 import { T, FONTS } from './tokens';
-import { VIEW_META, NOTES_V2, USERS } from './data';
-import { loadNotes, saveNotes, isAdmin } from './utils/notesStorage';
+import { VIEW_META, DEFAULT_NOTES_V2, USERS } from './data';
+import {
+  fetchNotes,
+  persistNotes,
+  isAdmin,
+  NOTES_UPDATED_EVENT,
+} from './utils/notesApi';
 
 const AUTH_STORAGE_KEY = 'devatlas_user';
 
@@ -354,20 +359,11 @@ function ViewContent({ view, onNav, user, notes, setNotes, canEditNotes, pending
 }
 
 /* ─── Dashboard ─── */
-function Dashboard({ user, onLogout }) {
+function Dashboard({ user, onLogout, notes, setNotes }) {
   const [view,        setView]        = useState('home');
-  const [notes,       setNotes]       = useState(() => loadNotes(NOTES_V2));
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileNav,   setMobileNav]   = useState(false);
   const canEditNotes = isAdmin(user);
-
-  const setNotesPersisted = useCallback((updater) => {
-    setNotes(prev => {
-      const next = typeof updater === 'function' ? updater(prev) : updater;
-      if (isAdmin(user)) saveNotes(next);
-      return next;
-    });
-  }, [user]);
 
   // Track the view that was active before search started so we can restore it
   const prevViewRef = useRef('home');
@@ -453,7 +449,7 @@ function Dashboard({ user, onLogout }) {
             onNav={setView}
             user={user}
             notes={notes}
-            setNotes={setNotesPersisted}
+            setNotes={setNotes}
             canEditNotes={canEditNotes}
             pendingDrawerNote={pendingDrawerNote}
             clearPendingDrawer={() => setPendingDrawerNote(null)}
@@ -472,9 +468,50 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState(savedUser || '');
   const [showDash,    setShowDash]    = useState(!!savedUser);
   const [loginVis,    setLoginVis]    = useState(!savedUser);
+  /* Shared notebook — stored in src/data/notes-store.json (not localStorage) */
+  const [notes, setNotes] = useState(null);
+  const [notesLoading, setNotesLoading] = useState(true);
+
+  const reloadSharedNotes = useCallback(async () => {
+    setNotesLoading(true);
+    const data = await fetchNotes(DEFAULT_NOTES_V2);
+    setNotes(data);
+    setNotesLoading(false);
+  }, []);
+
+  useEffect(() => {
+    reloadSharedNotes();
+  }, [reloadSharedNotes]);
+
+  useEffect(() => {
+    const onNotesUpdated = () => reloadSharedNotes();
+    window.addEventListener(NOTES_UPDATED_EVENT, onNotesUpdated);
+    return () => window.removeEventListener(NOTES_UPDATED_EVENT, onNotesUpdated);
+  }, [reloadSharedNotes]);
+
+  useEffect(() => {
+    if (isLoggedIn) reloadSharedNotes();
+  }, [currentUser, isLoggedIn, reloadSharedNotes]);
+
+  const setNotesShared = useCallback((updater) => {
+    setNotes(prev => {
+      const base = prev || DEFAULT_NOTES_V2;
+      const next = typeof updater === 'function' ? updater(base) : updater;
+      if (isAdmin(currentUser)) {
+        persistNotes(next).catch(err => {
+          window.alert(
+            `Could not save notes to project file:\n${err.message}\n\n` +
+            'Use npm run dev (not preview) so admin saves write to src/data/notes-store.json.'
+          );
+        });
+      }
+      return next;
+    });
+  }, [currentUser]);
 
   const handleLogin = (username) => {
     saveUser(username);
+    reloadSharedNotes();
     setLoginVis(false);
     setTimeout(() => {
       setIsLoggedIn(true);
@@ -506,7 +543,21 @@ export default function App() {
       )}
       {isLoggedIn && (
         <div style={{ opacity: showDash ? 1 : 0, transition: 'opacity 0.35s ease' }}>
-          <Dashboard user={currentUser} onLogout={handleLogout} />
+          {notesLoading || !notes ? (
+            <div style={{
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              minHeight: '60vh', fontFamily: FONTS.mono, color: T.muted, fontSize: 14,
+            }}>
+              Loading notebook…
+            </div>
+          ) : (
+            <Dashboard
+              user={currentUser}
+              onLogout={handleLogout}
+              notes={notes}
+              setNotes={setNotesShared}
+            />
+          )}
         </div>
       )}
     </div>

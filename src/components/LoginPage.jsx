@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { T, FONTS } from '../tokens';
 import { USERS } from '../data';
 
@@ -7,6 +7,7 @@ export default function LoginPage({ onLogin }) {
   const [password, setPassword] = useState('');
   const [error, setError]       = useState('');
   const [inputErr, setInputErr] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -116,16 +117,47 @@ export default function LoginPage({ onLogin }) {
               <label style={{ fontFamily:FONTS.mono, fontSize:11, color:T.muted, letterSpacing:'0.1em', display:'block', marginBottom:8 }}>
                 PASSWORD
               </label>
-              <input
-                id="login-password"
-                type="password"
-                value={password}
-                onChange={e => setPassword(e.target.value)}
-                placeholder="Enter your password"
-                style={inputStyle(inputErr)}
-                onFocus={e => { e.target.style.borderColor = T.cyan; e.target.style.boxShadow = `0 0 0 3px rgba(0,212,255,0.12)`; }}
-                onBlur={e => { e.target.style.borderColor = inputErr ? T.pink : T.border; e.target.style.boxShadow = 'none'; }}
-              />
+              <div style={{ position: 'relative' }}>
+                <input
+                  id="login-password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={e => setPassword(e.target.value)}
+                  placeholder="Enter your password"
+                  style={{
+                    ...inputStyle(inputErr),
+                    paddingRight: 44,
+                  }}
+                  onFocus={e => { e.target.style.borderColor = T.cyan; e.target.style.boxShadow = `0 0 0 3px rgba(0,212,255,0.12)`; }}
+                  onBlur={e => { e.target.style.borderColor = inputErr ? T.pink : T.border; e.target.style.boxShadow = 'none'; }}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(v => !v)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                  style={{
+                    position: 'absolute',
+                    right: 10,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    background: 'none',
+                    border: 'none',
+                    cursor: 'pointer',
+                    color: T.muted,
+                    fontSize: 18,
+                    lineHeight: 1,
+                    padding: 4,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                  onMouseEnter={e => (e.currentTarget.style.color = T.cyan)}
+                  onMouseLeave={e => (e.currentTarget.style.color = T.muted)}
+                >
+                  {showPassword ? '🙈' : '👁'}
+                </button>
+              </div>
               <p style={{ fontFamily:FONTS.mono, fontSize:11, color:T.dim, marginTop:5 }}>Minimum 6 characters</p>
             </div>
 
@@ -151,10 +183,9 @@ export default function LoginPage({ onLogin }) {
             borderRadius:10, padding:'16px 18px' }}>
             <p style={{ fontFamily:FONTS.mono, fontSize:11, color:T.yellow,
               letterSpacing:'0.08em', marginBottom:10 }}>DEMO CREDENTIALS</p>
-            {[['admin','admin123','Edit notes'],['dev','dev123','View only']].map(([u,p,role]) => (
-              <div key={u} className="flex justify-between items-center gap-2" style={{ marginBottom:8, fontSize:13 }}>
+            {[['admin','admin123'],['dev','dev123']].map(([u,p]) => (
+              <div key={u} className="flex justify-between" style={{ marginBottom:6, fontSize:13 }}>
                 <span style={{ fontFamily:FONTS.mono, color:T.muted }}>{u}</span>
-                <span style={{ fontFamily:FONTS.mono, fontSize:10, color:T.cyan }}>{role}</span>
                 <span style={{ fontFamily:FONTS.mono, color:T.dim }}>{p}</span>
               </div>
             ))}

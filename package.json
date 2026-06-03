@@ -4,7 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "seed:notes": "node scripts/seed-notes-store.mjs",
+    "predev": "node scripts/seed-notes-store.mjs",
     "dev": "vite",
+    "prebuild": "node scripts/seed-notes-store.mjs",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"

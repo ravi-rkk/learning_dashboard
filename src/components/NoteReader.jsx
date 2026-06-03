@@ -55,6 +55,27 @@ export default function NoteReader({
     resetDrafts();
   }, [note.id, initialEditMode, canEdit]); // eslint-disable-line
 
+  /* When parent saves, refresh drafts + view from latest note data */
+  useEffect(() => {
+    if (editing) return;
+    setDraftTopic(note.topic || '');
+    setDraftPreview(note.preview || '');
+    setDraftTags((note.tags || []).join(', '));
+    setDraftStatus(note.status || 'Pending');
+    setDraftContent(note.content || '');
+    setDraftImages(normalizeImages(note.images));
+  }, [
+    note.id,
+    note.updatedAt,
+    note.topic,
+    note.preview,
+    note.content,
+    note.status,
+    note.tags,
+    note.images,
+    editing,
+  ]);
+
   useEffect(() => {
     if (!canEdit) setEditing(false);
   }, [canEdit]);
@@ -94,7 +115,7 @@ export default function NoteReader({
       tags: tags.length ? tags : ['General'],
       status: draftStatus,
       content: draftContent,
-      images: images.length ? images : undefined,
+      images,
     });
     setEditing(false);
   }

@@ -60,6 +60,15 @@ export default function ViewNotes({ view, notes, setNotes, canEdit = false, pend
     }
   }, [canEdit]);
 
+  /* Keep open reader in sync with saved notes (after save / refresh in parent state) */
+  useEffect(() => {
+    if (!readingNote || readerEditMode) return;
+    const fresh = allDomNotes.find(n => n.id === readingNote.id);
+    if (fresh && fresh.updatedAt !== readingNote.updatedAt) {
+      setReadingNote(fresh);
+    }
+  }, [allDomNotes, readingNote?.id, readingNote?.updatedAt, readerEditMode]);
+
   useEffect(() => {
     if (pendingDrawerNote) {
       if (pendingDrawerNote.stack) setSelectedStack(pendingDrawerNote.stack);
@@ -92,27 +101,48 @@ export default function ViewNotes({ view, notes, setNotes, canEdit = false, pend
 
   function saveNoteFields(noteId, fields) {
     if (!canEdit) return;
-    setNotes(prev => ({
-      ...prev,
-      [slug]: prev[slug].map(n =>
-        n.id === noteId
-          ? { ...n, ...fields, updatedAt: 'just now' }
-          : n
-      ),
-    }));
-    setReadingNote(prev => prev ? { ...prev, ...fields, updatedAt: 'just now' } : null);
+
+    const normalized = {
+      ...fields,
+      updatedAt: 'just now',
+    };
+    if ('images' in normalized) {
+      normalized.images = Array.isArray(normalized.images) ? normalized.images : [];
+    }
+
+    let savedNote = null;
+
+    setNotes(prev => {
+      const next = {
+        ...prev,
+        [slug]: prev[slug].map(n => {
+          if (n.id !== noteId) return n;
+          savedNote = { ...n, ...normalized };
+          return savedNote;
+        }),
+      };
+      return next;
+    });
+
+    if (savedNote) {
+      setReadingNote(savedNote);
+    }
   }
 
   function patchNote(noteId, field, val) {
     if (!canEdit) return;
-    setNotes(prev => ({
-      ...prev,
-      [slug]: prev[slug].map(n =>
-        n.id === noteId
-          ? { ...n, [field]: val, updatedAt: 'just now' }
-          : n
-      ),
-    }));
+    setNotes(prev => {
+      const next = {
+        ...prev,
+        [slug]: prev[slug].map(n => {
+          if (n.id !== noteId) return n;
+          const updated = { ...n, [field]: val, updatedAt: 'just now' };
+          if (readingNote?.id === noteId) setReadingNote(updated);
+          return updated;
+        }),
+      };
+      return next;
+    });
   }
 
   function deleteNote(noteId) {
@@ -158,6 +188,7 @@ export default function ViewNotes({ view, notes, setNotes, canEdit = false, pend
 
   const reader = readingNote ? (
     <NoteReader
+      key={`${readingNote.id}-${readingNote.updatedAt}`}
       note={readingNote}
       domain={readerDomain}
       indexMeta={indexMeta}

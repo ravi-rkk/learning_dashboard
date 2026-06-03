@@ -768,15 +768,7 @@ export default function NotesView({
                 + Add Note
               </button>
             </>
-          ) : (
-            <span style={{
-              fontFamily: FONTS.mono, fontSize: 11, padding: '6px 12px',
-              borderRadius: 7, border: `1px solid ${T.border}`,
-              background: T.surface2, color: T.muted,
-            }}>
-              👁 View only
-            </span>
-          )}
+          ) : null}
         </div>
       </div>
 
