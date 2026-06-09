@@ -1,7 +1,7 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import './index.css';
 import { T, FONTS } from './tokens';
-import { VIEW_META, DEFAULT_NOTES_V2, USERS } from './data';
+import { VIEW_META, DEFAULT_NOTES_V2, USERS, DOMAINS, IQ } from './data';
 import {
   fetchNotes,
   persistNotes,
@@ -46,17 +46,27 @@ import ViewInterview from './views/ViewInterview';
 import ViewProfile  from './views/ViewProfile';
 
 /* ─── Stats Strip ─── */
-const STATS = [
-  { icon:'📚', value:'39', label:'Total Notes',   color:'#00d4ff' },
-  { icon:'✅', value:'22', label:'Completed',     color:'#00ffb3' },
-  { icon:'⏳', value:'17', label:'Pending',        color:'#ffcc00' },
-  { icon:'💬', value:'120',label:"Interview Q's", color:'#9b72ff' },
-];
+function StatsStrip({ notes = {} }) {
+  const allNotes = Object.entries(notes).flatMap(([slug, arr]) => {
+    if (slug.startsWith('_')) return [];
+    return arr;
+  });
+  const total = allNotes.length;
+  const completed = allNotes.filter(n => n.status === 'Complete').length;
+  const pending = allNotes.filter(n => n.status === 'In Progress' || n.status === 'Pending').length;
+  
+  const iqCount = IQ.reduce((acc, curr) => acc + (curr.questions?.length || 0), 0);
 
-function StatsStrip() {
+  const stats = [
+    { icon:'📚', value: total, label:'Total Notes',   color:'#00d4ff' },
+    { icon:'✅', value: completed, label:'Completed',     color:'#00ffb3' },
+    { icon:'⏳', value: pending, label:'Pending',        color:'#ffcc00' },
+    { icon:'💬', value: iqCount, label:"Interview Q's", color:'#9b72ff' },
+  ];
+
   return (
     <div className="stats-grid grid grid-cols-4 gap-4 mb-8">
-      {STATS.map(({ icon, value, label, color }) => (
+      {stats.map(({ icon, value, label, color }) => (
         <div key={label} className="stat-card relative overflow-hidden"
           style={{ background:T.surface, border:`1px solid ${T.border}`,
             borderRadius:12, padding:'18px 20px', transition:'border-color 0.2s' }}>
@@ -96,13 +106,7 @@ function HighlightText({ text, query }) {
   );
 }
 
-/* ─── Domain badge config ─── */
-const DOMAIN_BADGE = {
-  'full-stack': { label:'Full Stack', color:T.cyan,   bg:'rgba(0,212,255,0.1)'   },
-  'frontend':   { label:'Frontend',   color:T.green,  bg:'rgba(0,255,179,0.1)'   },
-  'backend':    { label:'Backend',    color:T.yellow, bg:'rgba(255,204,0,0.1)'   },
-  'devops':     { label:'DevOps',     color:'#ff4d9e',bg:'rgba(255,77,158,0.1)'  },
-};
+
 
 const STATUS_STYLE = {
   'Complete':    { bg:'rgba(0,255,179,0.08)',  color:'#00ffb3' },
@@ -111,11 +115,12 @@ const STATUS_STYLE = {
 };
 
 /* ─── Search Results View ─── */
-function SearchResults({ query, notes, onOpenDrawer }) {
+function SearchResults({ query, notes, onOpenDrawer, domains = [] }) {
   // Flatten all notes across domains, tagging each with its slug
-  const allNotes = Object.entries(notes).flatMap(([slug, arr]) =>
-    arr.map(n => ({ ...n, _slug: slug }))
-  );
+  const allNotes = Object.entries(notes).flatMap(([slug, arr]) => {
+    if (slug.startsWith('_')) return [];
+    return arr.map(n => ({ ...n, _slug: slug }));
+  });
 
   const q = query.toLowerCase();
   const results = allNotes.filter(n =>
@@ -154,7 +159,12 @@ function SearchResults({ query, notes, onOpenDrawer }) {
 
       {/* Cards */}
       {results.map(n => {
-        const badge = DOMAIN_BADGE[n._slug] || DOMAIN_BADGE['full-stack'];
+        const domObj = domains.find(d => d.slug === n._slug);
+        const badge = domObj ? {
+          label: domObj.label,
+          color: domObj.color,
+          bg: `${domObj.color}18`
+        } : { label: 'Unknown', color: T.muted, bg: T.surface2 };
         const s     = STATUS_STYLE[n.status] || STATUS_STYLE['Pending'];
         return (
           <div
@@ -330,7 +340,7 @@ function Topbar({ view, searchQuery, setSearchQuery, onMenuOpen }) {
 }
 
 /* ─── View Switcher ─── */
-function ViewContent({ view, onNav, user, notes, setNotes, canEditNotes, pendingDrawerNote, clearPendingDrawer }) {
+function ViewContent({ view, onNav, user, notes, setNotes, canEditNotes, pendingDrawerNote, clearPendingDrawer, domains, onAddTopic }) {
   const style = {
     minHeight: 200,
     transition: 'opacity 0.2s ease, transform 0.2s ease',
@@ -339,7 +349,7 @@ function ViewContent({ view, onNav, user, notes, setNotes, canEditNotes, pending
   };
 
   if (view === 'home')           return <div style={style}><ViewHome onNav={onNav} /></div>;
-  if (view === 'domains')        return <div style={style}><ViewDomains onNav={onNav} /></div>;
+  if (view === 'domains')        return <div style={style}><ViewDomains onNav={onNav} domains={domains} canEdit={canEditNotes} onAddTopic={onAddTopic} /></div>;
   if (view.startsWith('notes-')) return (
     <div style={style}>
       <ViewNotes
@@ -350,17 +360,20 @@ function ViewContent({ view, onNav, user, notes, setNotes, canEditNotes, pending
         canEdit={canEditNotes}
         pendingDrawerNote={pendingDrawerNote}
         clearPendingDrawer={clearPendingDrawer}
+        domains={domains}
       />
     </div>
   );
-  if (view === 'interview')      return <div style={style}><ViewInterview /></div>;
-  if (view === 'profile')        return <div style={style}><ViewProfile user={user} /></div>;
+  if (view === 'interview')      return <div style={style}><ViewInterview notes={notes} setNotes={setNotes} canEdit={canEditNotes} /></div>;
+  if (view === 'profile')        return <div style={style}><ViewProfile user={user} domains={domains} notes={notes} /></div>;
   return null;
 }
 
 /* ─── Dashboard ─── */
 function Dashboard({ user, onLogout, notes, setNotes }) {
-  const [view,        setView]        = useState('home');
+  const [view,        setView]        = useState(() => {
+    return sessionStorage.getItem('devatlas-active-view') || 'home';
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileNav,   setMobileNav]   = useState(false);
   const canEditNotes = isAdmin(user);
@@ -370,17 +383,15 @@ function Dashboard({ user, onLogout, notes, setNotes }) {
 
   const isSearching = searchQuery.length >= 2;
 
-  // Keep prevViewRef current whenever we're NOT in search mode
+  // Sync view state to sessionStorage
   useEffect(() => {
+    sessionStorage.setItem('devatlas-active-view', view);
     if (!isSearching) prevViewRef.current = view;
   }, [view, isSearching]);
 
   // When search is cleared, restore the previous view
   const handleSetSearch = useCallback((q) => {
     setSearchQuery(q);
-    if (q.length < 2) {
-      // nothing — ViewContent stays on prevViewRef.current (which is `view`)
-    }
   }, []);
 
   /* Drawer from search results — we need a shared drawer state here so
@@ -389,12 +400,47 @@ function Dashboard({ user, onLogout, notes, setNotes }) {
      We store a "pending open note" and pass it down to ViewNotes. */
   const [pendingDrawerNote, setPendingDrawerNote] = useState(null);
 
-  const SLUG_TO_VIEW = {
-    'full-stack': 'notes-fs',
-    'frontend':   'notes-fe',
-    'backend':    'notes-be',
-    'devops':     'notes-do',
-  };
+  const dynamicDomains = useMemo(() => {
+    const rawDomains = notes?._domains || DOMAINS || [];
+    return rawDomains.map(d => {
+      const domNotes = notes?.[d.slug] || [];
+      const total = domNotes.length;
+      const done = domNotes.filter(n => n.status === 'Complete').length;
+      const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+      return {
+        ...d,
+        done,
+        total,
+        pct
+      };
+    });
+  }, [notes]);
+
+  const SLUG_TO_VIEW = useMemo(() => {
+    const mapping = {};
+    dynamicDomains.forEach(d => {
+      mapping[d.slug] = d.key;
+    });
+    return mapping;
+  }, [dynamicDomains]);
+
+  const handleAddTopic = useCallback((domainId, newTopic) => {
+    setNotes(prev => {
+      const currentDomains = prev._domains || DOMAINS;
+      const updatedDomains = currentDomains.map(d => {
+        if (d.id !== domainId) return d;
+        if (d.topics.includes(newTopic)) return d;
+        return {
+          ...d,
+          topics: [...d.topics, newTopic],
+        };
+      });
+      return {
+        ...prev,
+        _domains: updatedDomains
+      };
+    });
+  }, [setNotes]);
 
   function handleSearchResultClick(note) {
     // Navigate to that domain's notes view, then signal ViewNotes to open drawer
@@ -427,6 +473,8 @@ function Dashboard({ user, onLogout, notes, setNotes }) {
         onNav={(v) => { setView(v); setSearchQuery(''); }}
         user={user}
         onLogout={onLogout}
+        domains={dynamicDomains}
+        notes={notes}
       />
       <main className="app-main">
         <Topbar
@@ -434,14 +482,16 @@ function Dashboard({ user, onLogout, notes, setNotes }) {
           searchQuery={searchQuery}
           setSearchQuery={handleSetSearch}
           onMenuOpen={() => setMobileNav(true)}
+          domains={dynamicDomains}
         />
-        {view === 'home' && !isSearching && <StatsStrip />}
-
+        {view === 'home' && !isSearching && <StatsStrip notes={notes} />}
+ 
         {isSearching ? (
           <SearchResults
             query={searchQuery}
             notes={notes}
             onOpenDrawer={handleSearchResultClick}
+            domains={dynamicDomains}
           />
         ) : (
           <ViewContent
@@ -453,6 +503,8 @@ function Dashboard({ user, onLogout, notes, setNotes }) {
             canEditNotes={canEditNotes}
             pendingDrawerNote={pendingDrawerNote}
             clearPendingDrawer={() => setPendingDrawerNote(null)}
+            domains={dynamicDomains}
+            onAddTopic={handleAddTopic}
           />
         )}
       </main>
@@ -473,7 +525,10 @@ export default function App() {
   const [notesLoading, setNotesLoading] = useState(true);
 
   const reloadSharedNotes = useCallback(async () => {
-    setNotesLoading(true);
+    setNotes(prev => {
+      if (!prev) setNotesLoading(true);
+      return prev;
+    });
     const data = await fetchNotes(DEFAULT_NOTES_V2);
     setNotes(data);
     setNotesLoading(false);
@@ -492,6 +547,18 @@ export default function App() {
   useEffect(() => {
     if (isLoggedIn) reloadSharedNotes();
   }, [currentUser, isLoggedIn, reloadSharedNotes]);
+
+  useEffect(() => {
+    if (isLoggedIn && notes && notes._users) {
+      if (!notes._users[currentUser]) {
+        clearSavedUser();
+        setIsLoggedIn(false);
+        setCurrentUser('');
+        setLoginVis(true);
+        setShowDash(false);
+      }
+    }
+  }, [notes, isLoggedIn, currentUser]);
 
   const setNotesShared = useCallback((updater) => {
     setNotes(prev => {
@@ -538,7 +605,7 @@ export default function App() {
           transition: 'opacity 0.35s ease',
           position:'absolute', inset:0, zIndex:10,
         }}>
-          <LoginPage onLogin={handleLogin} />
+          <LoginPage onLogin={handleLogin} users={notes?._users || USERS} />
         </div>
       )}
       {isLoggedIn && (

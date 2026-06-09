@@ -56,4 +56,24 @@ export const DEFAULT_NOTES_V2 = {
     { id:'do7', topic:'Nginx & Load Balancing',     tags:['Nginx','Proxy'],                status:'Pending',     preview:'Reverse proxy, SSL termination and load balancing.',  content:'Nginx: high-performance web server and reverse proxy. Config: server blocks, location blocks, upstream groups. SSL: Let\'s Encrypt with Certbot. Load balancing: round-robin, least_conn, ip_hash strategies.',     updatedAt:'4 weeks ago' },
     { id:'do8', topic:'Linux for DevOps',           tags:['Linux','Shell'],                status:'Complete',    preview:'Shell scripting, process management and cron jobs.',  content:'Linux essentials: file system (/etc, /var, /usr), permissions (chmod, chown), processes (ps, top, kill), package managers (apt, yum), cron for scheduling, bash scripting (variables, loops, functions, pipes).',    updatedAt:'2 weeks ago' },
   ],
+  'system-design': [
+    { id:'sd1', topic:'Introduction to Scalability', tags:['scalability','architecture'], status:'Complete', preview:'Vertical vs horizontal scaling, latency vs throughput.', content:'Scaling types: vertical (more power to one machine) vs horizontal (more machines). Latency (time to read) vs throughput (number of requests/sec). Availability is measured in nines.', updatedAt:'2 days ago' },
+    { id:'sd2', topic:'What is a Load Balancer?', tags:['nginx','load-balancer'], status:'In Progress', preview:'Software vs hardware load balancers and algorithms.', content:'Load balancers distribute incoming traffic. Common algorithms: Round Robin, Least Connections, IP Hash. Nginx, HAProxy, and AWS ALB are popular options.', updatedAt:'4 days ago' }
+  ],
+  'dsa': [
+    { id:'dsa1', topic:'Time & Space Complexity (Big O)', tags:['Big-O','Complexity'], status:'Complete', preview:'How to analyze algorithm efficiency.', content:'Big O notation measures worst-case runtime or space. Common classes: O(1) constant, O(log N) logarithmic, O(N) linear, O(N log N) log-linear, O(N^2) quadratic.', updatedAt:'1 week ago' },
+    { id:'dsa2', topic:'Singly Linked Lists', tags:['Linked-List','Data-Structure'], status:'Pending', preview:'Singly vs doubly linked list and operations.', content:'A node stores data and next reference. Insertion/deletion is O(1) if head is known. Lookup is O(N). Unlike arrays, elements are not contiguous in memory.', updatedAt:'2 weeks ago' }
+  ],
+  'java': [
+    { id:'java1', topic:'OOP Principles in Java', tags:['OOP','Java'], status:'Complete', preview:'Encapsulation, inheritance, polymorphism, and abstraction.', content:'Java is an OOP language. Encapsulation (private fields, getters/setters), Inheritance (extends keyword), Polymorphism (method overloading/overriding), Abstraction (abstract classes & interfaces).', updatedAt:'3 days ago' },
+    { id:'java2', topic:'Java Collections Framework', tags:['Collections','List','Map'], status:'In Progress', preview:'List, Set, Map interfaces and implementation classes.', content:'Collection interface has List (ArrayList, LinkedList), Set (HashSet, TreeSet). Map (HashMap, TreeMap) holds key-value pairs. HashMap lookup is O(1) average.', updatedAt:'6 days ago' }
+  ],
+  'spring-boot': [
+    { id:'sb1', topic:'What is Spring Boot?', tags:['Spring-Boot','DI'], status:'Complete', preview:'Autoconfiguration, starter dependencies, and Spring Initializr.', content:'Spring Boot simplifies Spring framework setup. It uses starter dependencies, opinionated autoconfiguration, and embedded servers (Tomcat by default). Dependency Injection via @Autowired.', updatedAt:'3 days ago' },
+    { id:'sb2', topic:'Spring Boot REST Controller', tags:['REST','Controller'], status:'In Progress', preview:'@RestController, @GetMapping, @PostMapping, and ResponseEntity.', content:'@RestController combines @Controller and @ResponseBody. Use HTTP verb mappings: @GetMapping, @PostMapping, @PutMapping, @DeleteMapping. Return ResponseEntity for headers/status.', updatedAt:'1 week ago' }
+  ],
+  'generative-ai': [
+    { id:'ai1', topic:'Transformer Architecture', tags:['LLM','Attention'], status:'Complete', preview:'The backbone of modern LLMs: Self-Attention.', content:'Transformer model introduced in "Attention Is All You Need" (2017). Key components: Multi-Head Self-Attention, Encoder-Decoder stacks, Positional Encoding. Self-attention weights words dynamically based on context.', updatedAt:'3 days ago' },
+    { id:'ai2', topic:'Retrieval-Augmented Generation (RAG)', tags:['RAG','LLM','Context'], status:'In Progress', preview:'Enhancing LLM responses with external data.', content:'RAG retrieves relevant documents from a database (e.g., using Vector Search) and injects them into the prompt context for the LLM to generate grounded answers without fine-tuning.', updatedAt:'1 week ago' }
+  ]
 };

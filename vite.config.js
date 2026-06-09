@@ -9,4 +9,12 @@ export default defineConfig({
     tailwindcss(),
     notesApiPlugin(),
   ],
+  server: {
+    watch: {
+      ignored: [
+        '**/src/data/notes-store.json',
+        '**/public/notes-store.json'
+      ]
+    }
+  }
 })

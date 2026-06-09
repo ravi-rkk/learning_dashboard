@@ -254,8 +254,9 @@
       ],
       "status": "Pending",
       "preview": "querySelector, events, and dynamic updates.",
-      "content": "Select nodes with querySelector. addEventListener for events. classList, textContent, createElement for updates. Event delegation on parent elements.",
-      "updatedAt": "2 weeks ago"
+      "content": "Select nodes with querySelector. addEventListener for events. classList, textContent, createElement for updates. Eve[pink]nt delegation on parent elements.[/pink]",
+      "updatedAt": "just now",
+      "images": []
     },
     {
       "id": "fs-n1",
@@ -438,6 +439,50 @@
       "preview": "Depends() for shared logic and DB sessions.",
       "content": "Depends() injects callables into routes — DB sessions, auth, pagination. Yields pattern for cleanup. Testable and reusable across endpoints.",
       "updatedAt": "2 weeks ago"
+    },
+    {
+      "id": "1781025600469",
+      "stack": "javascript",
+      "topic": "",
+      "tags": [],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
+    },
+    {
+      "id": "1781025610356",
+      "stack": "javascript",
+      "topic": "",
+      "tags": [],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
+    },
+    {
+      "id": "1781026772597",
+      "stack": "javascript",
+      "topic": "",
+      "tags": [],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
+    },
+    {
+      "id": "1781026851085",
+      "stack": "javascript",
+      "topic": "",
+      "tags": [],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
     }
   ],
   "frontend": [
@@ -670,6 +715,16 @@
       "preview": "Helmet, CORS, rate limiting and input validation.",
       "content": "Security essentials: Helmet sets HTTP headers, cors() configures cross-origin, express-rate-limit throttles requests, express-validator sanitizes inputs. SQL injection prevention: parameterized queries. OWASP Top 10.",
       "updatedAt": "4 weeks ago"
+    },
+    {
+      "id": "1781026789317",
+      "topic": "",
+      "tags": [],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
     }
   ],
   "devops": [
@@ -768,6 +823,620 @@
       "preview": "Shell scripting, process management and cron jobs.",
       "content": "Linux essentials: file system (/etc, /var, /usr), permissions (chmod, chown), processes (ps, top, kill), package managers (apt, yum), cron for scheduling, bash scripting (variables, loops, functions, pipes).",
       "updatedAt": "2 weeks ago"
+    }
+  ],
+  "_domains": [
+    {
+      "id": "fs",
+      "key": "notes-fs",
+      "slug": "full-stack",
+      "label": "Full Stack",
+      "icon": "🌐",
+      "color": "#00d4ff",
+      "bg": "rgba(0,212,255,0.08)",
+      "subtitle": "React, Node.js, APIs & more",
+      "tag": "Full Stack",
+      "topics": [
+        "React",
+        "Node.js",
+        "REST APIs",
+        "MongoDB",
+        "Auth",
+        "Deployment"
+      ],
+      "done": 18,
+      "total": 30,
+      "pct": 60
+    },
+    {
+      "id": "fe",
+      "key": "notes-fe",
+      "slug": "frontend",
+      "label": "Frontend",
+      "icon": "🎨",
+      "color": "#00ffb3",
+      "bg": "rgba(0,255,179,0.08)",
+      "subtitle": "HTML, CSS, JS & React",
+      "tag": "Frontend",
+      "topics": [
+        "HTML5",
+        "CSS3",
+        "JavaScript",
+        "React",
+        "TypeScript",
+        "Testing"
+      ],
+      "done": 8,
+      "total": 10,
+      "pct": 80
+    },
+    {
+      "id": "be",
+      "key": "notes-be",
+      "slug": "backend",
+      "label": "Backend",
+      "icon": "⚙️",
+      "color": "#ffcc00",
+      "bg": "rgba(255,204,0,0.08)",
+      "subtitle": "Servers, DBs & Auth",
+      "tag": "Backend",
+      "topics": [
+        "Express.js",
+        "PostgreSQL",
+        "Authentication",
+        "Caching"
+      ],
+      "done": 4,
+      "total": 9,
+      "pct": 45
+    },
+    {
+      "id": "do",
+      "key": "notes-do",
+      "slug": "devops",
+      "label": "DevOps",
+      "icon": "🚀",
+      "color": "#ff4d9e",
+      "bg": "rgba(255,77,158,0.08)",
+      "subtitle": "Docker, K8s, CI/CD & Cloud",
+      "tag": "DevOps",
+      "topics": [
+        "Docker",
+        "Kubernetes",
+        "CI/CD",
+        "AWS",
+        "Monitoring"
+      ],
+      "done": 2,
+      "total": 8,
+      "pct": 30
+    },
+    {
+      "id": "sd",
+      "key": "notes-sd",
+      "slug": "system-design",
+      "label": "System Design",
+      "icon": "📐",
+      "color": "#ff7675",
+      "bg": "rgba(255,118,117,0.08)",
+      "subtitle": "Architecture, scalability & design patterns",
+      "tag": "System Design",
+      "topics": [
+        "Scalability",
+        "Load Balancers",
+        "Caching",
+        "Database Sharding",
+        "Microservices",
+        "System Design Interview",
+        "Microservices Architecture"
+      ],
+      "done": 1,
+      "total": 2,
+      "pct": 50
+    },
+    {
+      "id": "dsa",
+      "key": "notes-dsa",
+      "slug": "dsa",
+      "label": "DSA",
+      "icon": "🧮",
+      "color": "#74b9ff",
+      "bg": "rgba(116,185,255,0.08)",
+      "subtitle": "Data structures & algorithms basics",
+      "tag": "DSA",
+      "topics": [
+        "Arrays",
+        "Linked Lists",
+        "Trees",
+        "Graphs",
+        "Recursion & Dynamic Programming"
+      ],
+      "done": 1,
+      "total": 2,
+      "pct": 50
+    },
+    {
+      "id": "java",
+      "key": "notes-java",
+      "slug": "java",
+      "label": "Java",
+      "icon": "☕",
+      "color": "#e17055",
+      "bg": "rgba(225,112,85,0.08)",
+      "subtitle": "OOP, Collections, Multithreading & JVM",
+      "tag": "Java",
+      "topics": [
+        "OOP Concepts",
+        "Java Collections",
+        "Multithreading",
+        "JVM Architecture",
+        "Java 8+ Features"
+      ],
+      "done": 1,
+      "total": 2,
+      "pct": 50
+    },
+    {
+      "id": "sb",
+      "key": "notes-sb",
+      "slug": "spring-boot",
+      "label": "Spring Boot",
+      "icon": "🍃",
+      "color": "#2ecc71",
+      "bg": "rgba(46,204,113,0.08)",
+      "subtitle": "Spring Framework, MVC, Data JPA & Security",
+      "tag": "Spring Boot",
+      "topics": [
+        "Dependency Injection",
+        "Spring Boot MVC",
+        "Spring Data JPA",
+        "Spring Security",
+        "Microservices"
+      ],
+      "done": 1,
+      "total": 2,
+      "pct": 50
+    },
+    {
+      "id": "ai",
+      "key": "notes-ai",
+      "slug": "generative-ai",
+      "label": "Generative AI",
+      "icon": "🤖",
+      "color": "#a29bfe",
+      "bg": "rgba(162,155,254,0.08)",
+      "subtitle": "LLMs, Prompt Engineering, RAG & Agents",
+      "tag": "Generative AI",
+      "topics": [
+        "LLMs & Transformers",
+        "Prompt Engineering",
+        "RAG (Retrieval-Augmented)",
+        "Vector Databases",
+        "LangChain & Agents"
+      ],
+      "done": 1,
+      "total": 2,
+      "pct": 50
+    }
+  ],
+  "system-design": [
+    {
+      "id": "1781026953466",
+      "topic": "Micr",
+      "tags": [
+        "General"
+      ],
+      "status": "Pending",
+      "preview": "",
+      "content": "# Microservices Architecture Design\n\nThis note is about microservices architecture design patterns and best practices.",
+      "images": [],
+      "updatedAt": "just now"
+    },
+    {
+      "id": "1781026973096",
+      "topic": "M",
+      "tags": [],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
+    },
+    {
+      "id": "1781027011183",
+      "topic": "New Topic",
+      "tags": [
+        "General"
+      ],
+      "status": "Pending",
+      "preview": "",
+      "content": "### Strategies\n- Unit testing\n- Contract testing",
+      "images": [],
+      "updatedAt": "just now"
+    },
+    {
+      "id": "1781027024752",
+      "topic": "New Topic",
+      "tags": [],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
+    },
+    {
+      "id": "1781027043272",
+      "topic": "New Topic",
+      "tags": [],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
+    },
+    {
+      "id": "1781027064606",
+      "topic": "New Topic",
+      "tags": [],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
+    },
+    {
+      "id": "1781027118725",
+      "topic": "New Topic",
+      "tags": [],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
+    },
+    {
+      "id": "1781027182247",
+      "topic": "New Topic",
+      "tags": [],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
+    },
+    {
+      "id": "1781027531291",
+      "topic": "New Topic",
+      "tags": [],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
+    },
+    {
+      "id": "1781027556268",
+      "topic": "New Topic",
+      "tags": [],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
+    },
+    {
+      "id": "1781027581144",
+      "topic": "New Topic",
+      "tags": [],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
+    },
+    {
+      "id": "1781027598170",
+      "topic": "New Topic",
+      "tags": [],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
+    },
+    {
+      "id": "1781027622752",
+      "topic": "New Topic",
+      "tags": [],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
+    },
+    {
+      "id": "1781027643113",
+      "topic": "New Topic",
+      "tags": [],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
+    },
+    {
+      "id": "1781027673534",
+      "topic": "New Topic",
+      "tags": [],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
+    },
+    {
+      "id": "1781027762851",
+      "topic": "New Topic",
+      "tags": [],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
+    },
+    {
+      "id": "1781029004116",
+      "topic": "New Topic",
+      "tags": [],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
+    },
+    {
+      "id": "1781029017066",
+      "topic": "New Topic",
+      "tags": [],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
+    },
+    {
+      "id": "1781029031198",
+      "topic": "New Topic",
+      "tags": [],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
+    },
+    {
+      "id": "1781029051115",
+      "topic": "New Topic",
+      "tags": [],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
+    },
+    {
+      "id": "1781029383505",
+      "topic": "New Topic",
+      "tags": [],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
+    },
+    {
+      "id": "1781029603223",
+      "topic": "Microservices Testing Strategies",
+      "tags": [
+        "General"
+      ],
+      "status": "Pending",
+      "preview": "Comprehensive guide to microservices testing strategies.",
+      "content": "### Testing Strategies\n- Unit testing\n- Contract testing",
+      "images": [],
+      "updatedAt": "just now"
+    }
+  ],
+  "dsa": [
+    {
+      "id": "1781029810846",
+      "topic": "New Topic",
+      "tags": [
+        "General"
+      ],
+      "status": "Pending",
+      "preview": "",
+      "content": "",
+      "images": [],
+      "updatedAt": "just now"
+    }
+  ],
+  "_iq": [
+    {
+      "domain": "Full Stack",
+      "questions": [
+        {
+          "topic": "JavaScript",
+          "q": "What is the difference between == and === in JavaScript?",
+          "diff": "Easy",
+          "a": "<strong style=\"color:#00d4ff\">==</strong> checks value only (type coercion). <strong style=\"color:#00d4ff\">===</strong> checks value AND type (strict equality). Always prefer === to avoid subtle bugs. Examples: <strong style=\"color:#ffcc00\">0 == false → true</strong> but <strong style=\"color:#00ffb3\">0 === false → false</strong>; null == undefined → true but null === undefined → false."
+        },
+        {
+          "topic": "JavaScript",
+          "q": "Explain the concept of closures in JavaScript.",
+          "diff": "Medium",
+          "a": "A <strong style=\"color:#00d4ff\">closure</strong> is a function that retains access to its outer scope even after the outer function has returned. Use cases: data privacy, factory functions, event handlers, memoization. Example: <strong style=\"color:#ffcc00\">const counter = (() => { let n=0; return () => ++n; })();</strong>"
+        },
+        {
+          "topic": "JavaScript",
+          "q": "What is the difference between var, let, and const?",
+          "diff": "Easy",
+          "a": "<strong style=\"color:#ffcc00\">var</strong> is function-scoped and hoisted. <strong style=\"color:#00d4ff\">let</strong> and <strong style=\"color:#00ffb3\">const</strong> are block-scoped. const cannot be reassigned (but object properties can change). Prefer const by default, let when reassigning."
+        },
+        {
+          "topic": "JavaScript",
+          "q": "Explain promises and async/await in JavaScript.",
+          "diff": "Medium",
+          "a": "A <strong style=\"color:#00d4ff\">Promise</strong> represents async work (pending → fulfilled/rejected). <strong style=\"color:#00ffb3\">async/await</strong> is syntactic sugar: async functions return promises; await pauses until resolution. Use try/catch for errors."
+        },
+        {
+          "topic": "React",
+          "q": "What is JSX and why does React use it?",
+          "diff": "Easy",
+          "a": "<strong style=\"color:#00d4ff\">JSX</strong> is syntax that looks like HTML inside JavaScript. Babel compiles it to <strong style=\"color:#ffcc00\">React.createElement()</strong> calls. It keeps UI structure readable and co-located with component logic."
+        },
+        {
+          "topic": "Node.js",
+          "q": "What is the event loop in Node.js?",
+          "diff": "Hard",
+          "a": "Node.js is single-threaded but handles async via the <strong style=\"color:#9b72ff\">event loop</strong>: Call Stack → Node APIs → Callback Queue → back to stack. Phases: <strong style=\"color:#00d4ff\">timers</strong> → I/O callbacks → idle → poll → <strong style=\"color:#00ffb3\">check (setImmediate)</strong> → close callbacks."
+        },
+        {
+          "topic": "APIs",
+          "q": "What is RESTful API design?",
+          "diff": "Medium",
+          "a": "<strong style=\"color:#00d4ff\">REST</strong> = Representational State Transfer. Principles: stateless, client-server, cacheable, uniform interface. HTTP methods: <strong style=\"color:#00ffb3\">GET</strong> (read), <strong style=\"color:#ffcc00\">POST</strong> (create), PUT/PATCH (update), <strong style=\"color:#ff4d9e\">DELETE</strong> (remove). Use proper status codes."
+        },
+        {
+          "topic": "Database",
+          "q": "What is the difference between SQL and NoSQL databases?",
+          "diff": "Easy",
+          "a": "<strong style=\"color:#00d4ff\">SQL</strong>: structured, relational, ACID, fixed schema (MySQL, PostgreSQL). Great for complex queries. <strong style=\"color:#00ffb3\">NoSQL</strong>: flexible schema, horizontal scaling, eventual consistency (MongoDB, Redis). Great for unstructured or rapidly evolving data."
+        }
+      ]
+    },
+    {
+      "domain": "Frontend",
+      "questions": [
+        {
+          "topic": "React",
+          "q": "What is the Virtual DOM in React and how does it work?",
+          "diff": "Medium",
+          "a": "The <strong style=\"color:#00d4ff\">Virtual DOM</strong> is a lightweight JS representation of the real DOM. React compares (diffs) the new VDOM with the previous one (<strong style=\"color:#ffcc00\">reconciliation</strong>) and only patches changed parts in the real DOM, making updates efficient and fast."
+        },
+        {
+          "topic": "React",
+          "q": "What are React hooks and why were they introduced?",
+          "diff": "Easy",
+          "a": "Hooks let you use <strong style=\"color:#00d4ff\">state and lifecycle features</strong> in functional components. Introduced in React 16.8 to eliminate class components. Key hooks: <strong style=\"color:#00ffb3\">useState</strong>, useEffect, useContext, useReducer, useMemo, useCallback, useRef."
+        },
+        {
+          "topic": "React",
+          "q": "What is the difference between useState and useEffect?",
+          "diff": "Easy",
+          "a": "<strong style=\"color:#00d4ff\">useState</strong> stores and updates component state. <strong style=\"color:#00ffb3\">useEffect</strong> runs side effects after render (fetch data, subscriptions, DOM sync). useEffect accepts a dependency array to control when it re-runs."
+        },
+        {
+          "topic": "React",
+          "q": "What is code splitting and lazy loading in React?",
+          "diff": "Hard",
+          "a": "<strong style=\"color:#00d4ff\">Code splitting</strong> divides your bundle into smaller chunks loaded on demand. Use <strong style=\"color:#ffcc00\">React.lazy()</strong> + Suspense to lazily load components. This reduces initial bundle size and improves Time-to-Interactive."
+        },
+        {
+          "topic": "React",
+          "q": "What is the difference between controlled and uncontrolled components?",
+          "diff": "Easy",
+          "a": "<strong style=\"color:#00d4ff\">Controlled</strong>: form input value managed by React state (value + onChange). <strong style=\"color:#00ffb3\">Uncontrolled</strong>: DOM manages its own state, accessed via refs. Controlled is preferred for validation and predictable behavior."
+        },
+        {
+          "topic": "CSS",
+          "q": "Explain CSS specificity and the cascade.",
+          "diff": "Medium",
+          "a": "<strong style=\"color:#00d4ff\">Specificity</strong> determines which CSS rule wins when multiple rules match. Order: inline styles (1000) > IDs (100) > classes/attrs (10) > elements (1). The <strong style=\"color:#9b72ff\">cascade</strong> also considers source order and !important."
+        },
+        {
+          "topic": "JavaScript",
+          "q": "What is the event loop in the browser?",
+          "diff": "Hard",
+          "a": "The browser <strong style=\"color:#00d4ff\">event loop</strong> runs JS on a single thread. Call stack executes sync code; async tasks (timers, fetch) go to Web APIs, then callbacks queue to the microtask queue (promises) or macrotask queue (setTimeout)."
+        }
+      ]
+    },
+    {
+      "domain": "Backend",
+      "questions": [
+        {
+          "topic": "APIs",
+          "q": "What is the primary goal of Spring Boot? [EDITED]",
+          "diff": "Easy",
+          "a": "To simplify Spring application development using auto-configuration and starters."
+        },
+        {
+          "topic": "Node.js",
+          "q": "What is middleware in Express.js?",
+          "diff": "Easy",
+          "a": "<strong style=\"color:#00d4ff\">Middleware</strong> are functions with access to req, res, and next(). They execute in sequence and can modify the request/response, end the cycle, or call next(). Uses: logging, auth, parsing, error handling."
+        },
+        {
+          "topic": "Database",
+          "q": "Explain database indexing and when to use it.",
+          "diff": "Medium",
+          "a": "An <strong style=\"color:#00d4ff\">index</strong> is a data structure (B-tree, hash) that speeds up reads. Use indexes on columns used in <strong style=\"color:#ffcc00\">WHERE, JOIN, ORDER BY</strong>. Trade-off: faster reads, slower writes and more storage."
+        },
+        {
+          "topic": "Database",
+          "q": "What is the N+1 query problem?",
+          "diff": "Hard",
+          "a": "The <strong style=\"color:#ff4d9e\">N+1 problem</strong> occurs when fetching N records triggers N additional queries for related data. Solutions: <strong style=\"color:#00d4ff\">eager loading</strong> (JOINs/includes), <strong style=\"color:#00ffb3\">DataLoader</strong> (batching for GraphQL), or select with JOIN."
+        },
+        {
+          "topic": "Auth",
+          "q": "What is JWT and how does authentication work?",
+          "diff": "Medium",
+          "a": "<strong style=\"color:#00d4ff\">JWT</strong> (JSON Web Token) has 3 parts: header.payload.signature. Server signs token with a secret; client stores it (localStorage/cookie) and sends in Authorization header. Server verifies signature on each request — <strong style=\"color:#9b72ff\">stateless auth</strong>."
+        },
+        {
+          "topic": "APIs",
+          "q": "What is horizontal vs vertical scaling?",
+          "diff": "Easy",
+          "a": "<strong style=\"color:#00d4ff\">Vertical scaling</strong> = adding more CPU/RAM to one server (limited ceiling). <strong style=\"color:#00ffb3\">Horizontal scaling</strong> = adding more servers and distributing load. Horizontal is preferred for high-availability, cloud-native systems."
+        }
+      ]
+    },
+    {
+      "domain": "DevOps",
+      "questions": [
+        {
+          "topic": "Docker",
+          "q": "What is Docker and how do containers differ from VMs?",
+          "diff": "Easy",
+          "a": "<strong style=\"color:#00d4ff\">Docker</strong> packages apps + dependencies into containers. Unlike VMs, containers share the host OS kernel — they are <strong style=\"color:#00ffb3\">lighter, faster to start</strong> and more portable. VMs include a full guest OS."
+        },
+        {
+          "topic": "Kubernetes",
+          "q": "Explain Kubernetes pods, services, and deployments.",
+          "diff": "Medium",
+          "a": "<strong style=\"color:#00d4ff\">Pod</strong>: smallest deployable unit, holds 1+ containers. <strong style=\"color:#ffcc00\">Service</strong>: stable network endpoint for a set of pods (ClusterIP, NodePort, LoadBalancer). <strong style=\"color:#9b72ff\">Deployment</strong>: declarative way to manage pod replicas and rolling updates."
+        },
+        {
+          "topic": "CI/CD",
+          "q": "What is Infrastructure as Code (IaC)?",
+          "diff": "Medium",
+          "a": "<strong style=\"color:#00d4ff\">IaC</strong> means managing infrastructure via code (not manual clicks). Tools: <strong style=\"color:#00ffb3\">Terraform</strong> (declarative, cloud-agnostic), Pulumi (imperative), AWS CloudFormation. Benefits: version control, reproducibility, automation."
+        },
+        {
+          "topic": "CI/CD",
+          "q": "What are the stages of a CI/CD pipeline?",
+          "diff": "Easy",
+          "a": "Typical stages: <strong style=\"color:#00d4ff\">Source</strong> (commit triggers) → <strong style=\"color:#00ffb3\">Build</strong> (compile/bundle) → <strong style=\"color:#ffcc00\">Test</strong> (unit, integration, e2e) → <strong style=\"color:#9b72ff\">Release</strong> (artifact) → <strong style=\"color:#ff4d9e\">Deploy</strong> (staging → production)."
+        },
+        {
+          "topic": "CI/CD",
+          "q": "What is the difference between blue-green and canary deployments?",
+          "diff": "Hard",
+          "a": "<strong style=\"color:#00d4ff\">Blue-green</strong>: maintain two identical environments; switch traffic all-at-once; instant rollback. <strong style=\"color:#00ffb3\">Canary</strong>: gradually route a small % of traffic to new version, monitor, then increase. Canary reduces risk for large user bases."
+        }
+      ]
     }
   ]
 }

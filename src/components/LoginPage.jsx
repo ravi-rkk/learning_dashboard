@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { T, FONTS } from '../tokens';
 import { USERS } from '../data';
 
-export default function LoginPage({ onLogin }) {
+export default function LoginPage({ onLogin, users = USERS }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError]       = useState('');
@@ -11,7 +11,7 @@ export default function LoginPage({ onLogin }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (USERS[username] && USERS[username] === password) {
+    if (users[username] && users[username] === password) {
       setError('');
       onLogin(username);
     } else {
@@ -183,7 +183,7 @@ export default function LoginPage({ onLogin }) {
             borderRadius:10, padding:'16px 18px' }}>
             <p style={{ fontFamily:FONTS.mono, fontSize:11, color:T.yellow,
               letterSpacing:'0.08em', marginBottom:10 }}>DEMO CREDENTIALS</p>
-            {[['admin','admin123'],['dev','dev123']].map(([u,p]) => (
+            {Object.entries(users).map(([u,p]) => (
               <div key={u} className="flex justify-between" style={{ marginBottom:6, fontSize:13 }}>
                 <span style={{ fontFamily:FONTS.mono, color:T.muted }}>{u}</span>
                 <span style={{ fontFamily:FONTS.mono, color:T.dim }}>{p}</span>

@@ -5,13 +5,6 @@ import NotesView from '../components/NotesView';
 import NoteReader from '../components/NoteReader';
 import FullStackStacks from '../components/FullStackStacks';
 
-const VIEW_TO_DOMAIN = {
-  'notes-fs': { slug:'full-stack', id:'fs' },
-  'notes-fe': { slug:'frontend',   id:'fe' },
-  'notes-be': { slug:'backend',    id:'be' },
-  'notes-do': { slug:'devops',     id:'do' },
-};
-
 const INDEX_STATUS_ORDER = ['Complete', 'In Progress', 'Pending'];
 
 function buildIndexOrder(notes) {
@@ -24,17 +17,43 @@ function buildIndexOrder(notes) {
   return ordered;
 }
 
-export default function ViewNotes({ view, notes, setNotes, canEdit = false, pendingDrawerNote, clearPendingDrawer }) {
-  const [editMode,       setEditMode]       = useState(false);
-  const [readingNote,    setReadingNote]    = useState(null);
-  const [readerEditMode, setReaderEditMode] = useState(false);
-  const [selectedStack,  setSelectedStack]  = useState(null);
-
-  const mapping  = VIEW_TO_DOMAIN[view] || VIEW_TO_DOMAIN['notes-fs'];
-  const { slug, id } = mapping;
+export default function ViewNotes({ view, notes, setNotes, canEdit = false, pendingDrawerNote, clearPendingDrawer, domains = [] }) {
+  const dom = domains.find(d => d.key === view) || domains[0] || DOMAINS[0];
+  const slug = dom?.slug || 'full-stack';
+  const id = dom?.id || 'fs';
   const isFullStack = view === 'notes-fs';
   const allDomNotes = (notes && notes[slug]) || [];
-  const dom      = DOMAINS.find(d => d.id === id) || DOMAINS[0];
+
+  const [editMode,       setEditMode]       = useState(false);
+  const [readingNote,    setReadingNote]    = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('devatlas-active-note');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed._slug === slug) {
+          return allDomNotes.find(n => n.id === parsed.id) || parsed;
+        }
+      }
+    } catch {}
+    return null;
+  });
+  const [readerEditMode, setReaderEditMode] = useState(() => {
+    return sessionStorage.getItem('devatlas-active-note-edit') === 'true';
+  });
+  const [selectedStack,  setSelectedStack]  = useState(null);
+
+  useEffect(() => {
+    if (readingNote) {
+      sessionStorage.setItem('devatlas-active-note', JSON.stringify({ id: readingNote.id, _slug: slug }));
+      sessionStorage.setItem('devatlas-active-note-edit', String(readerEditMode));
+    } else {
+      sessionStorage.removeItem('devatlas-active-note');
+      sessionStorage.removeItem('devatlas-active-note-edit');
+    }
+  }, [readingNote, readerEditMode, slug]);
+
+  const prevViewRef = import.meta.env ? useState(() => view)[0] : view; // A simple way to keep initial view
+  const activeViewRef = { current: prevViewRef };
 
   const stackMeta = isFullStack && selectedStack
     ? FULL_STACK_STACKS.find(s => s.id === selectedStack)
@@ -47,10 +66,14 @@ export default function ViewNotes({ view, notes, setNotes, canEdit = false, pend
   const indexOrder = buildIndexOrder(domNotes);
 
   useEffect(() => {
-    setReadingNote(null);
-    setReaderEditMode(false);
-    setEditMode(false);
-    if (view !== 'notes-fs') setSelectedStack(null);
+    // Only reset if view changes to a different tab after initial mount
+    if (sessionStorage.getItem('devatlas-prev-view') !== view) {
+      setReadingNote(null);
+      setReaderEditMode(false);
+      setEditMode(false);
+      if (view !== 'notes-fs') setSelectedStack(null);
+    }
+    sessionStorage.setItem('devatlas-prev-view', view);
   }, [view]);
 
   useEffect(() => {
@@ -149,17 +172,18 @@ export default function ViewNotes({ view, notes, setNotes, canEdit = false, pend
     if (!canEdit) return;
     setNotes(prev => ({
       ...prev,
-      [slug]: prev[slug].filter(n => n.id !== noteId),
+      [slug]: (prev[slug] || []).filter(n => n.id !== noteId),
     }));
     if (readingNote?.id === noteId) closeReader();
   }
 
   function addNote() {
     if (!canEdit) return;
+    const newId = Date.now().toString();
     const blank = {
-      id:        Date.now().toString(),
+      id:        newId,
       stack:     isFullStack ? (selectedStack || 'react') : undefined,
-      topic:     '',
+      topic:     'New Topic',
       tags:      [],
       status:    'Pending',
       preview:   '',
@@ -167,8 +191,9 @@ export default function ViewNotes({ view, notes, setNotes, canEdit = false, pend
       images:    [],
       updatedAt: 'just now',
     };
-    setNotes(prev => ({ ...prev, [slug]: [...prev[slug], blank] }));
-    if (!editMode) setEditMode(true);
+    setNotes(prev => ({ ...prev, [slug]: [...(prev[slug] || []), blank] }));
+    setReadingNote(blank);
+    setReaderEditMode(true);
   }
 
   function toggleEdit() {

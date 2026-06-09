@@ -9,28 +9,58 @@ export { DEFAULT_NOTES_V2 };
 
 export const DOMAINS = [
   {
-    id: 'fs', key: 'notes-fs', label: 'Full Stack', icon: '🌐', color: '#00d4ff',
+    id: 'fs', key: 'notes-fs', slug: 'full-stack', label: 'Full Stack', icon: '🌐', color: '#00d4ff',
     bg: 'rgba(0,212,255,0.08)', subtitle: 'React, Node.js, APIs & more',
     tag: 'Full Stack', topics: ['React','Node.js','REST APIs','MongoDB','Auth','Deployment'],
     done: 18, total: 30, pct: 60,
   },
   {
-    id: 'fe', key: 'notes-fe', label: 'Frontend', icon: '🎨', color: '#00ffb3',
+    id: 'fe', key: 'notes-fe', slug: 'frontend', label: 'Frontend', icon: '🎨', color: '#00ffb3',
     bg: 'rgba(0,255,179,0.08)', subtitle: 'HTML, CSS, JS & React',
     tag: 'Frontend', topics: ['HTML5','CSS3','JavaScript','React','TypeScript','Testing'],
     done: 8, total: 10, pct: 80,
   },
   {
-    id: 'be', key: 'notes-be', label: 'Backend', icon: '⚙️', color: '#ffcc00',
+    id: 'be', key: 'notes-be', slug: 'backend', label: 'Backend', icon: '⚙️', color: '#ffcc00',
     bg: 'rgba(255,204,0,0.08)', subtitle: 'Servers, DBs & Auth',
     tag: 'Backend', topics: ['Express.js','PostgreSQL','Authentication','Caching'],
     done: 4, total: 9, pct: 45,
   },
   {
-    id: 'do', key: 'notes-do', label: 'DevOps', icon: '🚀', color: '#ff4d9e',
+    id: 'do', key: 'notes-do', slug: 'devops', label: 'DevOps', icon: '🚀', color: '#ff4d9e',
     bg: 'rgba(255,77,158,0.08)', subtitle: 'Docker, K8s, CI/CD & Cloud',
     tag: 'DevOps', topics: ['Docker','Kubernetes','CI/CD','AWS','Monitoring'],
     done: 2, total: 8, pct: 30,
+  },
+  {
+    id: 'sd', key: 'notes-sd', slug: 'system-design', label: 'System Design', icon: '📐', color: '#ff7675',
+    bg: 'rgba(255,118,117,0.08)', subtitle: 'Architecture, scalability & design patterns',
+    tag: 'System Design', topics: ['Scalability', 'Load Balancers', 'Caching', 'Database Sharding', 'Microservices', 'System Design Interview'],
+    done: 1, total: 2, pct: 50,
+  },
+  {
+    id: 'dsa', key: 'notes-dsa', slug: 'dsa', label: 'DSA', icon: '🧮', color: '#74b9ff',
+    bg: 'rgba(116,185,255,0.08)', subtitle: 'Data structures & algorithms basics',
+    tag: 'DSA', topics: ['Arrays', 'Linked Lists', 'Trees', 'Graphs', 'Recursion & Dynamic Programming'],
+    done: 1, total: 2, pct: 50,
+  },
+  {
+    id: 'java', key: 'notes-java', slug: 'java', label: 'Java', icon: '☕', color: '#e17055',
+    bg: 'rgba(225,112,85,0.08)', subtitle: 'OOP, Collections, Multithreading & JVM',
+    tag: 'Java', topics: ['OOP Concepts', 'Java Collections', 'Multithreading', 'JVM Architecture', 'Java 8+ Features'],
+    done: 1, total: 2, pct: 50,
+  },
+  {
+    id: 'sb', key: 'notes-sb', slug: 'spring-boot', label: 'Spring Boot', icon: '🍃', color: '#2ecc71',
+    bg: 'rgba(46,204,113,0.08)', subtitle: 'Spring Framework, MVC, Data JPA & Security',
+    tag: 'Spring Boot', topics: ['Dependency Injection', 'Spring Boot MVC', 'Spring Data JPA', 'Spring Security', 'Microservices'],
+    done: 1, total: 2, pct: 50,
+  },
+  {
+    id: 'ai', key: 'notes-ai', slug: 'generative-ai', label: 'Generative AI', icon: '🤖', color: '#a29bfe',
+    bg: 'rgba(162,155,254,0.08)', subtitle: 'LLMs, Prompt Engineering, RAG & Agents',
+    tag: 'Generative AI', topics: ['LLMs & Transformers', 'Prompt Engineering', 'RAG (Retrieval-Augmented)', 'Vector Databases', 'LangChain & Agents'],
+    done: 1, total: 2, pct: 50,
   },
 ];
 
@@ -239,6 +269,11 @@ export const VIEW_META = {
   'notes-fe':{ title: 'Frontend Notes',   sub: 'HTML, CSS, JavaScript and React.' },
   'notes-be':{ title: 'Backend Notes',    sub: 'Servers, databases and authentication.' },
   'notes-do':{ title: 'DevOps Notes',     sub: 'Docker, Kubernetes, CI/CD and Cloud.' },
+  'notes-sd':{ title: 'System Design Notes', sub: 'Architecture, scalability, load balancers, caching & microservices.' },
+  'notes-dsa':{ title: 'DSA Notes',       sub: 'Data structures, algorithms, space & time complexity.' },
+  'notes-java':{ title: 'Java Notes',     sub: 'Java language fundamentals, OOP, Collections, Multithreading & JVM.' },
+  'notes-sb':{ title: 'Spring Boot Notes', sub: 'Spring Framework core, MVC, Data JPA & Security.' },
+  'notes-ai':{ title: 'Generative AI Notes', sub: 'LLMs, Prompt Engineering, RAG & Vector Databases.' },
   interview: { title: 'Interview Q&A',    sub: 'Practice questions by domain and difficulty.' },
   profile:   { title: 'My Progress',      sub: 'Track your study progress across all domains.' },
 };

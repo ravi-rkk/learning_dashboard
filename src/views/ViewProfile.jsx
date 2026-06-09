@@ -1,22 +1,38 @@
 import { useEffect, useState } from 'react';
 import { T, FONTS } from '../tokens';
+import { IQ } from '../data';
 
-const SKILL_ROWS = [
-  { icon:'🌐', label:'Full Stack', pct:65, color:'#00d4ff' },
-  { icon:'🎨', label:'Frontend',   pct:80, color:'#00ffb3' },
-  { icon:'⚙️',  label:'Backend',   pct:45, color:'#ffcc00' },
-  { icon:'🚀', label:'DevOps',     pct:30, color:'#ff4d9e' },
-];
-
-const SUMMARY_ROWS = [
-  { icon:'🌐', label:'Full Stack', total:12, done:8, pending:4, iq:30, pct:65, color:'#00d4ff' },
-  { icon:'🎨', label:'Frontend',   total:10, done:8, pending:2, iq:35, pct:80, color:'#00ffb3' },
-  { icon:'⚙️',  label:'Backend',   total:9,  done:4, pending:5, iq:30, pct:45, color:'#ffcc00' },
-  { icon:'🚀', label:'DevOps',     total:8,  done:2, pending:6, iq:25, pct:30, color:'#ff4d9e' },
-];
-
-export default function ViewProfile({ user }) {
+export default function ViewProfile({ user, domains = [], notes = {} }) {
   const [animated, setAnimated] = useState(false);
+  useEffect(() => { const t = setTimeout(() => setAnimated(true), 100); return () => clearTimeout(t); }, []);
+
+  const skillRows = domains.map(d => ({
+    icon: d.icon,
+    label: d.label,
+    pct: d.pct,
+    color: d.color
+  }));
+
+  const summaryRows = domains.map(d => {
+    const list = notes[d.slug] || [];
+    const done = list.filter(n => n.status === 'Complete').length;
+    const pending = list.filter(n => n.status === 'In Progress' || n.status === 'Pending').length;
+    const total = list.length;
+    
+    const matchingIQ = IQ.filter(qGroup => qGroup.domain === d.label || qGroup.domain === d.tag);
+    const iqCount = matchingIQ.reduce((acc, curr) => acc + (curr.questions?.length || 0), 0);
+
+    return {
+      icon: d.icon,
+      label: d.label,
+      total,
+      done,
+      pending,
+      iq: iqCount || (total * 2),
+      pct: d.pct,
+      color: d.color
+    };
+  });
   useEffect(() => { const t = setTimeout(() => setAnimated(true), 100); return () => clearTimeout(t); }, []);
 
   return (
@@ -48,7 +64,7 @@ export default function ViewProfile({ user }) {
           <h3 style={{ fontFamily:FONTS.heading, fontWeight:700, fontSize:19, color:T.text, marginBottom:24 }}>
             Domain Progress
           </h3>
-          {SKILL_ROWS.map(({ icon, label, pct, color }) => (
+          {skillRows.map(({ icon, label, pct, color }) => (
             <div key={label} style={{ marginBottom:20 }}>
               <div className="flex justify-between" style={{ marginBottom:8 }}>
                 <span style={{ fontSize:14, color:T.text }}>{icon} {label}</span>
@@ -57,14 +73,14 @@ export default function ViewProfile({ user }) {
               <div style={{ height:6, background:T.border, borderRadius:99, overflow:'hidden' }}>
                 <div className="skill-fill" style={{
                   height:'100%', borderRadius:99, background:color,
-                  width: animated ? `${pct}%` : '0%',
+                   width: animated ? `${pct}%` : '0%',
                 }} />
               </div>
             </div>
           ))}
         </div>
       </div>
-
+ 
       {/* Summary table */}
       <div style={{ background:T.surface, border:`1px solid ${T.border}`, borderRadius:14, overflow:'hidden' }}>
         <div style={{ padding:'16px 20px', borderBottom:`1px solid ${T.border}` }}>
@@ -83,8 +99,8 @@ export default function ViewProfile({ user }) {
             </tr>
           </thead>
           <tbody>
-            {SUMMARY_ROWS.map((r, i) => (
-              <tr key={r.label} style={{ borderBottom: i < SUMMARY_ROWS.length-1 ? `1px solid ${T.border}` : 'none' }}>
+            {summaryRows.map((r, i) => (
+              <tr key={r.label} style={{ borderBottom: i < summaryRows.length-1 ? `1px solid ${T.border}` : 'none' }}>
                 <td style={{ padding:'13px 18px', fontSize:13.5, color:T.text }}>{r.icon} {r.label}</td>
                 <td style={{ padding:'13px 18px', fontFamily:FONTS.mono, fontSize:13, color:T.muted }}>{r.total}</td>
                 <td style={{ padding:'13px 18px', fontFamily:FONTS.mono, fontSize:13, color:'#00ffb3' }}>{r.done}</td>

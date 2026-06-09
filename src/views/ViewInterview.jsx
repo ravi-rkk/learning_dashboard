@@ -26,7 +26,55 @@ function countByTopic(questions, topicId) {
   return questions.filter(q => q.topic === topicId).length;
 }
 
-export default function ViewInterview() {
+const labelStyle = {
+  fontFamily: FONTS.mono,
+  fontSize: 10,
+  color: T.muted,
+  letterSpacing: '0.1em',
+  display: 'block',
+  marginBottom: 6,
+};
+
+const fieldStyle = {
+  width: '100%',
+  background: T.surface,
+  border: `1px solid ${T.border2}`,
+  borderRadius: 10,
+  color: T.text,
+  padding: '12px 14px',
+  fontFamily: FONTS.body,
+  fontSize: 14,
+  outline: 'none',
+  boxSizing: 'border-box',
+  transition: 'border-color 0.15s',
+};
+
+const selectStyle = {
+  ...fieldStyle,
+  cursor: 'pointer',
+  appearance: 'none',
+  paddingRight: 32,
+  backgroundImage: `url("data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%238a99ad'%20stroke-width='2'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpolyline%20points='6%209%2012%2015%2018%209'%3E%3C/polyline%3E%3C/svg%3E")`,
+  backgroundRepeat: 'no-repeat',
+  backgroundPosition: 'right 12px center',
+  backgroundSize: '14px',
+};
+
+function actionBtn(color, bg, border) {
+  return {
+    fontFamily: FONTS.mono,
+    fontSize: 12,
+    padding: '8px 18px',
+    borderRadius: 8,
+    border: `1px solid ${border}`,
+    background: bg,
+    color,
+    cursor: 'pointer',
+    transition: 'all 0.15s',
+  };
+}
+
+export default function ViewInterview({ notes, setNotes, canEdit = false }) {
   const [activeDomain, setActiveDomain] = useState('All');
   const [activeTopic, setActiveTopic]   = useState('all');
   const [mixMode, setMixMode]           = useState(false);
@@ -34,14 +82,32 @@ export default function ViewInterview() {
   const [shuffleMix, setShuffleMix]     = useState(false);
   const [openIdx, setOpenIdx]           = useState(null);
 
+  const [isAdding, setIsAdding]         = useState(false);
+  const [editingKey, setEditingKey]     = useState(null);
+
+  const [draftQ, setDraftQ]             = useState('');
+  const [draftA, setDraftA]             = useState('');
+  const [draftTopic, setDraftTopic]     = useState('');
+  const [draftDiff, setDraftDiff]       = useState('Easy');
+  const [draftDomain, setDraftDomain]   = useState('Full Stack');
+
+  const questionsData = notes?._iq || IQ;
+
   const domainQuestions = useMemo(() => {
     const groups = activeDomain === 'All'
-      ? IQ
-      : IQ.filter(g => g.domain === activeDomain);
-    return groups.flatMap((g, gi) =>
-      g.questions.map((q, qi) => ({ ...q, domain: g.domain, key: `${g.domain}-${gi}-${qi}` }))
-    );
-  }, [activeDomain]);
+      ? questionsData
+      : questionsData.filter(g => g.domain === activeDomain);
+    return groups.flatMap((g) => {
+      const originalGroupIdx = questionsData.findIndex(orig => orig.domain === g.domain);
+      return g.questions.map((q, qi) => ({
+        ...q,
+        domain: g.domain,
+        key: `${g.domain}-${originalGroupIdx}-${qi}`,
+        domainIdx: originalGroupIdx,
+        questionIdx: qi
+      }));
+    });
+  }, [activeDomain, questionsData]);
 
   const availableTopics = useMemo(() => {
     const set = new Set(domainQuestions.map(q => q.topic).filter(Boolean));
@@ -99,11 +165,112 @@ export default function ViewInterview() {
     setOpenIdx(null);
   }
 
+  function startEditing(item) {
+    setEditingKey(item.key);
+    setDraftQ(item.q);
+    setDraftA(item.a);
+    setDraftTopic(item.topic);
+    setDraftDiff(item.diff);
+    setDraftDomain(item.domain);
+    setIsAdding(false);
+  }
+
+  function handleUpdateQuestion(oldDomain, questionIdx, updated) {
+    setNotes(prev => {
+      const currentIQ = prev._iq || IQ;
+      const newQ = {
+        topic: updated.topic,
+        q:     updated.q,
+        diff:  updated.diff,
+        a:     updated.a
+      };
+
+      let nextIQ = currentIQ.map(g => {
+        if (g.domain === oldDomain) {
+          if (oldDomain === updated.domain) {
+            return {
+              ...g,
+              questions: g.questions.map((q, idx) => idx === questionIdx ? newQ : q)
+            };
+          } else {
+            return {
+              ...g,
+              questions: g.questions.filter((_, idx) => idx !== questionIdx)
+            };
+          }
+        }
+        if (g.domain === updated.domain) {
+          return {
+            ...g,
+            questions: [newQ, ...g.questions]
+          };
+        }
+        return g;
+      });
+
+      if (oldDomain !== updated.domain) {
+        const targetExists = nextIQ.some(g => g.domain === updated.domain);
+        if (!targetExists) {
+          nextIQ = [...nextIQ, { domain: updated.domain, questions: [newQ] }];
+        }
+      }
+
+      return {
+        ...prev,
+        _iq: nextIQ
+      };
+    });
+  }
+
+  function handleAddQuestion(domainName, newQuestion) {
+    setNotes(prev => {
+      const currentIQ = prev._iq || IQ;
+      let foundDomain = false;
+      let nextIQ = currentIQ.map(g => {
+        if (g.domain !== domainName) return g;
+        foundDomain = true;
+        return {
+          ...g,
+          questions: [newQuestion, ...g.questions]
+        };
+      });
+      if (!foundDomain) {
+        nextIQ = [...nextIQ, { domain: domainName, questions: [newQuestion] }];
+      }
+      return {
+        ...prev,
+        _iq: nextIQ
+      };
+    });
+  }
+
+  function handleDeleteQuestion(domainName, questionIdx) {
+    if (!window.confirm('Delete this interview question? This cannot be undone.')) return;
+    setNotes(prev => {
+      const currentIQ = prev._iq || IQ;
+      const nextIQ = currentIQ.map(g => {
+        if (g.domain !== domainName) return g;
+        return {
+          ...g,
+          questions: g.questions.filter((_, idx) => idx !== questionIdx)
+        };
+      });
+      return {
+        ...prev,
+        _iq: nextIQ
+      };
+    });
+  }
+
   const mixLabel = mixMode
     ? (mixTopics.size === 0
       ? 'Pick 2+ topics below'
       : `${mixTopics.size} topics mixed${shuffleMix ? ' · shuffled' : ''}`)
     : null;
+
+  const topicsList = IQ_TOPIC_FILTERS.filter(t => t.id !== 'all');
+  const domainsList = ['Full Stack', 'Frontend', 'Backend', 'DevOps'];
+  const diffsList = ['Easy', 'Medium', 'Hard'];
 
   return (
     <div>
@@ -139,6 +306,30 @@ export default function ViewInterview() {
           Topic / technology
         </div>
         <div className="flex flex-wrap gap-2">
+          {canEdit && (
+            <button
+              type="button"
+              onClick={() => {
+                setIsAdding(prev => !prev);
+                setEditingKey(null);
+                setDraftQ('');
+                setDraftA('');
+                setDraftTopic(topicsList[0]?.id || 'JavaScript');
+                setDraftDiff('Easy');
+                setDraftDomain(activeDomain === 'All' ? 'Full Stack' : activeDomain);
+              }}
+              style={{
+                fontFamily: FONTS.mono, fontSize: 11, padding: '5px 12px', borderRadius: 999,
+                border: `1px solid rgba(0,255,179,0.4)`,
+                background: isAdding ? 'rgba(0,255,179,0.18)' : 'rgba(0,255,179,0.08)',
+                color: T.green,
+                cursor: 'pointer',
+                marginRight: 6,
+              }}
+            >
+              {isAdding ? '✕ Cancel' : '＋ Add Question'}
+            </button>
+          )}
           <button
             type="button"
             onClick={() => handleTopicClick('mix-toggle')}
@@ -220,7 +411,95 @@ export default function ViewInterview() {
         )}
       </div>
 
-      {filteredQs.length === 0 && (
+      {/* Inline Creation Form */}
+      {isAdding && (
+        <div
+          style={{
+            background: T.surface,
+            border: `1px solid ${T.green}44`,
+            borderRadius: 12,
+            marginBottom: 16,
+            padding: '20px 22px',
+          }}
+        >
+          <div style={{ fontFamily: FONTS.mono, fontSize: 10, color: T.green, letterSpacing: '0.12em', marginBottom: 16 }}>
+            CREATE NEW INTERVIEW QUESTION
+          </div>
+
+          <div style={{ marginBottom: 14 }}>
+            <label style={labelStyle}>QUESTION TEXT</label>
+            <input
+              value={draftQ}
+              onChange={e => setDraftQ(e.target.value)}
+              placeholder="e.g. What is closure in JavaScript?"
+              style={fieldStyle}
+            />
+          </div>
+
+          <div style={{ marginBottom: 14 }}>
+            <label style={labelStyle}>ANSWER (HTML SUPPORTED)</label>
+            <textarea
+              value={draftA}
+              onChange={e => setDraftA(e.target.value)}
+              placeholder="Explain the answer in detail. Use <strong>bold</strong> or <code>code</code> tags..."
+              rows={4}
+              style={{ ...fieldStyle, resize: 'vertical', lineHeight: 1.55 }}
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+            <div>
+              <label style={labelStyle}>DOMAIN</label>
+              <select value={draftDomain} onChange={e => setDraftDomain(e.target.value)} style={selectStyle}>
+                {domainsList.map(d => <option key={d} value={d}>{d}</option>)}
+              </select>
+            </div>
+            <div>
+              <label style={labelStyle}>TOPIC</label>
+              <select value={draftTopic} onChange={e => setDraftTopic(e.target.value)} style={selectStyle}>
+                {topicsList.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
+              </select>
+            </div>
+            <div>
+              <label style={labelStyle}>DIFFICULTY</label>
+              <select value={draftDiff} onChange={e => setDraftDiff(e.target.value)} style={selectStyle}>
+                {diffsList.map(d => <option key={d} value={d}>{d}</option>)}
+              </select>
+            </div>
+          </div>
+
+          <div className="flex gap-2 justify-end">
+            <button
+              type="button"
+              onClick={() => {
+                if (!draftQ.trim() || !draftA.trim()) {
+                  window.alert('Please fill out both the question and answer.');
+                  return;
+                }
+                handleAddQuestion(draftDomain, {
+                  topic: draftTopic,
+                  q: draftQ.trim(),
+                  diff: draftDiff,
+                  a: draftA.trim(),
+                });
+                setIsAdding(false);
+              }}
+              style={actionBtn(T.green, 'rgba(0,255,179,0.07)', 'rgba(0,255,179,0.4)')}
+            >
+              Add Question
+            </button>
+            <button
+              type="button"
+              onClick={() => setIsAdding(false)}
+              style={actionBtn(T.muted, T.surface3, T.border)}
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {filteredQs.length === 0 && !isAdding && (
         <div style={{
           textAlign: 'center', color: T.muted, padding: 48,
           background: T.surface, borderRadius: 12, border: `1px solid ${T.border}`,
@@ -239,8 +518,101 @@ export default function ViewInterview() {
 
       {filteredQs.map((item, idx) => {
         const isOpen = openIdx === idx;
+        const isEditing = editingKey === item.key;
         const d = DIFF_STYLE[item.diff] || DIFF_STYLE.Easy;
         const topicMeta = TOPIC_BY_ID[item.topic] || { color: T.muted, emoji: '📌' };
+
+        if (isEditing && canEdit) {
+          return (
+            <div
+              key={item.key}
+              style={{
+                background: T.surface,
+                border: `1px solid ${T.cyan}44`,
+                borderRadius: 12,
+                marginBottom: 10,
+                padding: '20px 22px',
+              }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div style={{ fontFamily: FONTS.mono, fontSize: 10, color: T.cyan, letterSpacing: '0.12em', marginBottom: 16 }}>
+                EDIT INTERVIEW QUESTION
+              </div>
+
+              <div style={{ marginBottom: 14 }}>
+                <label style={labelStyle}>QUESTION TEXT</label>
+                <input
+                  value={draftQ}
+                  onChange={e => setDraftQ(e.target.value)}
+                  placeholder="e.g. What is closure in JavaScript?"
+                  style={fieldStyle}
+                />
+              </div>
+
+              <div style={{ marginBottom: 14 }}>
+                <label style={labelStyle}>ANSWER (HTML SUPPORTED)</label>
+                <textarea
+                  value={draftA}
+                  onChange={e => setDraftA(e.target.value)}
+                  placeholder="Explain the answer in detail. Use <strong>bold</strong> or <code>code</code> tags..."
+                  rows={4}
+                  style={{ ...fieldStyle, resize: 'vertical', lineHeight: 1.55 }}
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+                <div>
+                  <label style={labelStyle}>DOMAIN</label>
+                  <select value={draftDomain} onChange={e => setDraftDomain(e.target.value)} style={selectStyle}>
+                    {domainsList.map(domName => <option key={domName} value={domName}>{domName}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>TOPIC</label>
+                  <select value={draftTopic} onChange={e => setDraftTopic(e.target.value)} style={selectStyle}>
+                    {topicsList.map(t => <option key={t.id} value={t.id}>{t.label}</option>)}
+                  </select>
+                </div>
+                <div>
+                  <label style={labelStyle}>DIFFICULTY</label>
+                  <select value={draftDiff} onChange={e => setDraftDiff(e.target.value)} style={selectStyle}>
+                    {diffsList.map(diffName => <option key={diffName} value={diffName}>{diffName}</option>)}
+                  </select>
+                </div>
+              </div>
+
+              <div className="flex gap-2 justify-end">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (!draftQ.trim() || !draftA.trim()) {
+                      window.alert('Please fill out both the question and answer.');
+                      return;
+                    }
+                    handleUpdateQuestion(item.domain, item.questionIdx, {
+                      q: draftQ.trim(),
+                      a: draftA.trim(),
+                      topic: draftTopic,
+                      diff: draftDiff,
+                      domain: draftDomain,
+                    });
+                    setEditingKey(null);
+                  }}
+                  style={actionBtn(T.green, 'rgba(0,255,179,0.07)', 'rgba(0,255,179,0.4)')}
+                >
+                  Save
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setEditingKey(null)}
+                  style={actionBtn(T.muted, T.surface3, T.border)}
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          );
+        }
 
         return (
           <div
@@ -277,6 +649,38 @@ export default function ViewInterview() {
               }}>
                 {item.diff}
               </span>
+              {canEdit && (
+                <div className="flex gap-1" onClick={e => e.stopPropagation()}>
+                  <button
+                    type="button"
+                    title="Edit Question"
+                    onClick={() => startEditing(item)}
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      fontSize: 14, color: T.muted, padding: '2px 6px', borderRadius: 4,
+                      transition: 'color 0.15s',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.color = T.cyan)}
+                    onMouseLeave={e => (e.currentTarget.style.color = T.muted)}
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    type="button"
+                    title="Delete Question"
+                    onClick={() => handleDeleteQuestion(item.domain, item.questionIdx)}
+                    style={{
+                      background: 'none', border: 'none', cursor: 'pointer',
+                      fontSize: 14, color: T.muted, padding: '2px 6px', borderRadius: 4,
+                      transition: 'color 0.15s',
+                    }}
+                    onMouseEnter={e => (e.currentTarget.style.color = T.pink)}
+                    onMouseLeave={e => (e.currentTarget.style.color = T.muted)}
+                  >
+                    🗑️
+                  </button>
+                </div>
+              )}
               <span style={{
                 color: T.muted, fontSize: 14, flexShrink: 0, marginLeft: 4,
                 transition: 'transform 0.2s', display: 'inline-block',

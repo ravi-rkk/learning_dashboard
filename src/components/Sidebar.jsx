@@ -1,36 +1,38 @@
 import { T, FONTS } from '../tokens';
 
-const NAV_SECTIONS = [
-  {
-    label: 'MAIN',
-    items: [
-      { id: 'home',      icon: '🏠', label: 'Overview' },
-      { id: 'domains',   icon: '🗂', label: 'Domains'  },
-    ],
-  },
-  {
-    label: 'NOTES',
-    items: [
-      { id: 'notes-fs', icon: '🌐', label: 'Full Stack', badge: 30 },
-      { id: 'notes-fe', icon: '🎨', label: 'Frontend',   badge: 10 },
-      { id: 'notes-be', icon: '⚙️',  label: 'Backend',    badge: 9  },
-      { id: 'notes-do', icon: '🚀', label: 'DevOps',     badge: 8  },
-    ],
-  },
-  {
-    label: 'TOOLS',
-    items: [
-      { id: 'interview', icon: '💬', label: 'Interview Q&A' },
-      { id: 'profile',   icon: '👤', label: 'My Progress'   },
-    ],
-  },
-];
 
-export default function Sidebar({ activeView, onNav, user, onLogout, mobileOpen, onClose }) {
+
+export default function Sidebar({ activeView, onNav, user, onLogout, mobileOpen, onClose, domains = [], notes = {} }) {
   function handleNav(id) {
     onNav(id);
     onClose?.();
   }
+
+  const navSections = [
+    {
+      label: 'MAIN',
+      items: [
+        { id: 'home',      icon: '🏠', label: 'Overview' },
+        { id: 'domains',   icon: '🗂', label: 'Domains'  },
+      ],
+    },
+    {
+      label: 'NOTES',
+      items: domains.map(d => ({
+        id: d.key,
+        icon: d.icon,
+        label: d.label,
+        badge: notes[d.slug]?.length || 0,
+      })),
+    },
+    {
+      label: 'TOOLS',
+      items: [
+        { id: 'interview', icon: '💬', label: 'Interview Q&A' },
+        { id: 'profile',   icon: '👤', label: 'My Progress'   },
+      ],
+    },
+  ];
 
   return (
     <aside
@@ -73,7 +75,7 @@ export default function Sidebar({ activeView, onNav, user, onLogout, mobileOpen,
       </div>
 
       <nav className="flex-1 overflow-y-auto px-3 py-4">
-        {NAV_SECTIONS.map(({ label, items }) => (
+        {navSections.map(({ label, items }) => (
           <div key={label} style={{ marginBottom: 20 }}>
             <div style={{
               fontFamily: FONTS.mono, fontSize: 10, color: T.dim,
